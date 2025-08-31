@@ -5,29 +5,38 @@
 
 Non-destructive tool discovery for AI-assisted development environments with real-time dashboard and Claude integration.
 
+**Platform Support:**
+- ✅ **macOS** - Fully tested and supported
+- 🏗️ **Windows** - Architecture ready, testing needed
+- 🏗️ **Linux** - Architecture ready, testing needed
+
 ## Quick Start
 
-### 1. Bootstrap System (One Time)
-Drop `claude-init.sh` into any directory and run:
+### Installation & Usage
 ```bash
-chmod +x claude-init.sh
-./claude-init.sh
+# Clone and install
+git clone https://github.com/binarybcc/ctdiscovery.git
+cd ctdiscovery
+npm install
+
+# Run tool discovery dashboard
+npm run scan
+
+# Generate conversation starter for Claude
+npm run tools
+
+# Watch mode (updates every 30s)
+npm run watch
 ```
 
-### 2. Initialize New Projects
+### Available Commands
 ```bash
-./init-project.sh web-app my-website
-./init-project.sh cli-tool my-automation  
-./init-project.sh client-project acme-corp
-./init-project.sh python data-analysis
-./init-project.sh backend api-server
-```
-
-### 3. Start Development
-```bash
-cd my-website
-# CLAUDE.md contains project-specific context
-# Universal methodologies available in parent directory
+npm run scan         # Dashboard + context generation
+npm run tools        # Show conversation starter
+npm run dashboard    # Clean dashboard only  
+npm run watch        # Auto-refresh every 30s
+npm start            # Full detailed output
+npm test             # Run test suite
 ```
 
 ## System Structure
@@ -52,14 +61,14 @@ your-projects-root/
 ```
 
 ## Features
-- ✅ Universal AI collaboration methodologies
-- ✅ Systematic interrogation protocols  
-- ✅ Project startup checklists and decision frameworks
-- ✅ Automated project initialization with proper Git setup
-- ✅ Project-type-specific configurations
-- ✅ Proper Claude Code integration and permissions
-- ✅ Tool discovery and capability management
-- ✅ Completely portable - works in any directory
+- ✅ **Tool Discovery Dashboard** - Real-time scanning of 20+ development tools
+- ✅ **Claude Integration** - Context generation and conversation starters
+- ✅ **Performance Optimized** - <3 second scan times with graceful degradation
+- ✅ **Plugin Architecture** - Extensible scanner system with standardized interfaces
+- ✅ **Non-Destructive** - Safe to run anywhere, no system modifications
+- ✅ **Universal Project Setup** - AI collaboration methodologies and project templates
+- ✅ **CLI Dashboard** - Visual status monitoring with color-coded output
+- ✅ **Cross-Platform Ready** - Architecture supports macOS, Windows, Linux
 
 ## Project Types Supported
 - `web-app` / `website` / `frontend` - Frontend web applications
