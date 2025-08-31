@@ -19,7 +19,7 @@
     "test:watch": "node --test --watch src/test/*.test.js"
   },
   "keywords": ["ai", "claude", "development", "tools", "status", "mcp"],
-  "author": "",
+  "author": "binarybcc",
   "license": "MIT",
   "type": "module"
 }

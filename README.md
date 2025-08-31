@@ -1,6 +1,9 @@
-# Claude Code Project System
+# CTDiscovery - AI Development Environment Status Dashboard
 
-Complete AI-assisted development environment with universal methodologies and project initialization.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub release](https://img.shields.io/github/release/binarybcc/ctdiscovery.svg)](https://github.com/binarybcc/ctdiscovery/releases)
+
+Non-destructive tool discovery for AI-assisted development environments with real-time dashboard and Claude integration.
 
 ## Quick Start
 
