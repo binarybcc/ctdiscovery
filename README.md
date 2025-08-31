@@ -12,12 +12,46 @@ Non-destructive tool discovery for AI-assisted development environments with rea
 
 ## Quick Start
 
-### Installation & Usage
+### Easy Installation Options
+
+#### Option 1: One-Line Install (Recommended)
 ```bash
-# Clone and install
-git clone https://github.com/binarybcc/ctdiscovery.git
-cd ctdiscovery
+# Install to ~/ctdiscovery with PATH setup
+curl -fsSL https://raw.githubusercontent.com/binarybcc/ctdiscovery/main/install.sh | bash
+```
+
+#### Option 2: Global npm Install
+```bash
+# Install globally via npm
+npm install -g https://github.com/binarybcc/ctdiscovery.git
+ctdiscovery scan  # Available anywhere
+```
+
+#### Option 3: Manual Install
+```bash
+# Clone and install manually
+git clone https://github.com/binarybcc/ctdiscovery.git ~/ctdiscovery
+cd ~/ctdiscovery
 npm install
+
+# Add to PATH (choose your shell)
+echo 'export PATH="$HOME/ctdiscovery:$PATH"' >> ~/.zshrc  # zsh
+echo 'export PATH="$HOME/ctdiscovery:$PATH"' >> ~/.bashrc # bash
+source ~/.zshrc  # or ~/.bashrc
+```
+
+### Usage
+```bash
+# After installation, use from anywhere:
+ctd          # Run dashboard + generate context
+ctdtools     # Show conversation starter
+ctdiscovery scan    # Full dashboard (if globally installed)
+ctdiscovery tools   # Generate tools context (if globally installed)
+```
+
+#### Local Project Usage (if not globally installed)
+```bash
+cd ~/ctdiscovery
 
 # Run tool discovery dashboard
 npm run scan
