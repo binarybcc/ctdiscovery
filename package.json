@@ -1,10 +1,11 @@
 {
   "name": "ctdiscovery",
-  "version": "0.4.0",
-  "description": "Non-destructive AI development environment status dashboard",
-  "main": "src/index.js",
+  "version": "1.0.0",
+  "description": "Non-destructive AI development environment scanner with real-time dashboard and Claude integration",
+  "main": "src/cli.js",
   "bin": {
-    "ctdiscovery": "./src/cli.js"
+    "ctdiscovery": "src/cli.js",
+    "ctd": "src/cli.js"
   },
   "scripts": {
     "start": "node src/cli.js",
@@ -18,8 +19,41 @@
     "test": "node --test src/test/*.test.js",
     "test:watch": "node --test --watch src/test/*.test.js"
   },
-  "keywords": ["ai", "claude", "development", "tools", "status", "mcp"],
-  "author": "binarybcc",
+  "keywords": [
+    "ai",
+    "claude",
+    "claude-code",
+    "development",
+    "tools",
+    "scanner",
+    "dashboard",
+    "cli",
+    "mcp",
+    "environment",
+    "developer-tools",
+    "ai-assistant"
+  ],
+  "author": {
+    "name": "binarybcc",
+    "url": "https://github.com/binarybcc"
+  },
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/binarybcc/ctdiscovery.git"
+  },
+  "bugs": {
+    "url": "https://github.com/binarybcc/ctdiscovery/issues"
+  },
+  "homepage": "https://github.com/binarybcc/ctdiscovery#readme",
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE",
+    "OVERVIEW.md"
+  ]
 }

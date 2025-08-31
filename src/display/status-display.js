@@ -141,28 +141,70 @@ export class StatusDisplay {
   }
 
   renderOverlaps(overlapAnalysis) {
-    let output = `\n🔄 ${this.colors.warning}Tool Overlaps Detected${this.colors.reset}\n`;
+    let output = `\n🔄 ${this.colors.info}Tool Overlap Analysis${this.colors.reset}\n`;
     
     const { overlaps, summary } = overlapAnalysis;
     
-    // Show summary
-    output += `   Found ${summary.total} potential overlaps\n`;
-    if (summary.bySeverity.warning > 0) {
-      output += `   ${this.colors.warning}⚠ ${summary.bySeverity.warning} may cause conflicts${this.colors.reset}\n`;
+    // Show factual summary
+    output += `   Detected ${summary.total} functional overlaps\n`;
+    if (summary.byType) {
+      Object.entries(summary.byType).forEach(([type, count]) => {
+        output += `   • ${count} ${type.replace('-', ' ')} overlaps\n`;
+      });
     }
-
-    // Show each overlap
+    
+    // Show each overlap with facts, not opinions
     overlaps.forEach(overlap => {
-      const severityColor = overlap.severity === 'warning' ? this.colors.warning : this.colors.info;
-      const severityIcon = overlap.severity === 'warning' ? '⚠' : 'ℹ';
+      const typeIcon = this.getOverlapIcon(overlap.type);
       
-      output += `\n   ${severityColor}${severityIcon} ${overlap.category}${this.colors.reset}\n`;
+      output += `\n   ${typeIcon} ${overlap.category.replace('-', ' ')}\n`;
       output += `      Tools: ${overlap.tools.join(', ')}\n`;
       output += `      ${overlap.message}\n`;
-      output += `      💡 ${overlap.recommendation}\n`;
+      
+      // Show evidence instead of recommendations
+      if (overlap.evidence) {
+        output += `      Evidence: ${overlap.evidence}\n`;
+      }
+      
+      // Show context warning if available
+      if (overlap.context_warning) {
+        output += `      ${overlap.context_warning}\n`;
+      }
+      
+      // Show additional details if available
+      if (overlap.details) {
+        Object.entries(overlap.details).forEach(([key, value]) => {
+          if (key === 'overlap_type') {
+            return; // Skip internal categorization
+          }
+          if (Array.isArray(value)) {
+            output += `      ${key.replace('_', ' ')}: ${value.join(', ')}\n`;
+          } else if (typeof value === 'object') {
+            output += `      ${key.replace('_', ' ')}: ${JSON.stringify(value)}\n`;
+          } else {
+            output += `      ${key.replace('_', ' ')}: ${value}\n`;
+          }
+        });
+      }
+      
+      // Show rule source if available
+      if (overlap.rule) {
+        output += `      Source: ${overlap.rule.name} v${overlap.rule.version}\n`;
+      }
     });
 
     return output;
+  }
+  
+  getOverlapIcon(type) {
+    const icons = {
+      'command-overlap': '⚡',
+      'process-conflict': '⚠️',
+      'functional-overlap': 'ℹ️',
+      'file-type-overlap': '📄',
+      'vscode-extension-overlap': '🧩'
+    };
+    return icons[type] || '🔍';
   }
 
   renderSummary(scanResults, overlapAnalysis) {

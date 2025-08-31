@@ -96,6 +96,7 @@ your-projects-root/
 
 ## Features
 - ✅ **Tool Discovery Dashboard** - Real-time scanning of 20+ development tools
+- ✅ **Advanced Overlap Analysis** - Algorithm-based detection of tool conflicts and duplicates
 - ✅ **Claude Integration** - Context generation and conversation starters
 - ✅ **Performance Optimized** - <3 second scan times with graceful degradation
 - ✅ **Plugin Architecture** - Extensible scanner system with standardized interfaces

@@ -172,12 +172,63 @@ ClaudeToolDiscovery/                    # Main project directory
 - **Tool count:** 23 active tools (20 system tools + 3 MCP servers)
 - **Performance:** <3 second scan times maintained
 
+## Advanced Overlap Analysis Implementation (2025-08-31)
+
+### ✅ Phase 1: Context-Aware Overlap Detection - COMPLETE
+
+**Key Achievement:** Intelligent overlap analysis that differentiates between legitimate system design and actual problems.
+
+#### **Smart Context Recognition:**
+- **System + Dev Versions**: `python` + `python3` → "✓ System and development versions commonly coexist"
+- **True Duplicates**: `npm` + `npm` → "⚠️ Duplicate installations detected - may indicate scanner issues"  
+- **Compatibility Tools**: `vim` + `nvim` → "✓ Neovim provides vim compatibility - this overlap is by design"
+
+#### **Technical Implementation:**
+- **Algorithm-based detection** replacing hard-coded tool lists
+- **Context analysis methods** for different overlap types
+- **Plugin-extensible rules** in `/src/overlap-rules/`
+- **External data provider** framework (graceful degradation)
+- **Factual output format** with evidence and context warnings
+
+#### **Current Capabilities:**
+- **Command overlap detection** - Multiple tools providing same commands
+- **Process conflict detection** - Tools that can't run simultaneously  
+- **Functional overlap detection** - Tools in same categories
+- **Duplicate installation detection** - Same tool appearing multiple times
+- **Context warnings** - Smart differentiation of overlap types
+
+### 🚧 Phase 2: Path-Based System vs User Detection - PLANNED
+
+**Goal:** Enhance overlap analysis with installation source detection for even smarter context.
+
+#### **Planned Features:**
+- **Installation path analysis** - Detect system (`/usr/bin/`) vs user (`/opt/homebrew/`) tools
+- **Origin categorization** - Automatic system/user/development version classification
+- **Version analysis** - Smart handling of multiple versions from different sources
+- **Lockfile integration** - Package manager primary detection via lockfiles
+- **External API integration** - Optional tool metadata from npm/homebrew/GitHub
+
+#### **Implementation Approach:**
+```javascript
+// Planned Phase 2 architecture
+analyzeToolOrigin(tool) {
+  const systemPaths = ['/usr/bin/', '/bin/', '/usr/sbin/'];
+  const userPaths = ['/opt/homebrew/', '/usr/local/', '~/.local/'];
+  
+  return {
+    origin: 'system' | 'user-installed' | 'development',
+    intentional: boolean,
+    confidence: 0.0-1.0
+  };
+}
+```
+
 ### Next Session Focus
+- **Phase 2 implementation** - Path-based system vs user detection
 - **Best practices research** for Node.js CLI tool development
 - **File structure standards** analysis and potential reorganization
-- **Code quality improvements** based on industry standards
 - **Documentation standards** review and enhancement
-- **Testing coverage** expansion and standardization
+- **Testing coverage** expansion for overlap analysis
 
 ---
 
