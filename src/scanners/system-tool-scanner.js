@@ -86,6 +86,9 @@ export class SystemToolScanner extends ToolScannerInterface {
       }
     }
 
+    // Deduplicate results - tools may appear in multiple categories
+    results.data = this.deduplicateTools(results.data);
+
     // Detect overlaps within categories
     results.overlaps = this.detectCategoryOverlaps(results.data);
 
@@ -203,6 +206,32 @@ export class SystemToolScanner extends ToolScannerInterface {
     });
 
     return overlaps;
+  }
+
+  deduplicateTools(tools) {
+    const deduplicatedData = [];
+    const seenTools = new Map();
+    
+    tools.forEach(tool => {
+      const key = tool.name.toLowerCase();
+      
+      if (!seenTools.has(key)) {
+        // First occurrence - add it
+        seenTools.set(key, tool);
+        deduplicatedData.push(tool);
+      } else {
+        // Duplicate detected - merge categories if possible
+        const existing = seenTools.get(key);
+        if (tool.metadata?.category && existing.metadata?.category) {
+          // Merge categories into a combined string
+          const categories = [existing.metadata.category, tool.metadata.category];
+          const uniqueCategories = [...new Set(categories)];
+          existing.metadata.category = uniqueCategories.join(', ');
+        }
+      }
+    });
+    
+    return deduplicatedData;
   }
 
   getOverlapSuggestion(category, tools) {
