@@ -1,0 +1,25 @@
+{
+  "name": "ctdiscovery",
+  "version": "0.4.0",
+  "description": "Non-destructive AI development environment status dashboard",
+  "main": "src/index.js",
+  "bin": {
+    "ctdiscovery": "./src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "dev": "node src/cli.js --dev",
+    "scan": "node src/cli.js --all --quiet",
+    "tools": "node src/cli.js --conversation-starter --show-starter --quiet",
+    "tools:quick": "node src/cli.js --conversation-starter --quiet",
+    "context": "node src/cli.js --generate-context --quiet",
+    "dashboard": "node src/cli.js --all --quiet",
+    "watch": "watch -n 30 'npm run dashboard'",
+    "test": "node --test src/test/*.test.js",
+    "test:watch": "node --test --watch src/test/*.test.js"
+  },
+  "keywords": ["ai", "claude", "development", "tools", "status", "mcp"],
+  "author": "",
+  "license": "MIT",
+  "type": "module"
+}

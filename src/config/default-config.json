@@ -1,0 +1,324 @@
+{
+  "version": "1.0.0",
+  "description": "CTDiscovery default tool configuration",
+  "performance": {
+    "maxScanTime": 3000,
+    "timeoutPerScanner": 2000,
+    "enableParallelScanning": true,
+    "maxConcurrentScanners": 4
+  },
+  "scanners": {
+    "mcp-server": {
+      "enabled": true,
+      "priority": 1,
+      "timeout": 2000,
+      "description": "Detects MCP (Model Context Protocol) servers",
+      "detectionMethods": [
+        "claude-config",
+        "npm-global",
+        "npm-local",
+        "system-binaries"
+      ],
+      "overlapRules": {
+        "deduplicateBy": ["name", "command"],
+        "priorityOrder": ["active", "configured", "installed", "available"]
+      },
+      "searchPaths": {
+        "macos": [
+          "~/Library/Application Support/Claude",
+          "~/.claude",
+          "/usr/local/bin",
+          "~/.local/bin"
+        ],
+        "win32": [
+          "%APPDATA%/Claude",
+          "%USERPROFILE%/.claude",
+          "%PROGRAMFILES%/nodejs",
+          "%APPDATA%/npm"
+        ],
+        "linux": [
+          "~/.config/claude",
+          "~/.claude",
+          "/usr/local/bin",
+          "~/.local/bin"
+        ]
+      },
+      "knownTools": [
+        {
+          "name": "filesystem",
+          "patterns": ["mcp-server-filesystem", "@modelcontextprotocol/server-filesystem"],
+          "description": "Provides file system access to AI models",
+          "capabilities": ["read_files", "write_files", "list_directories"]
+        },
+        {
+          "name": "git",
+          "patterns": ["mcp-server-git", "@modelcontextprotocol/server-git"],
+          "description": "Git repository operations",
+          "capabilities": ["git_status", "git_log", "git_diff"]
+        },
+        {
+          "name": "brave-search",
+          "patterns": ["mcp-server-brave-search", "@modelcontextprotocol/server-brave-search"],
+          "description": "Web search capabilities via Brave Search API",
+          "capabilities": ["web_search", "news_search", "image_search"]
+        },
+        {
+          "name": "sqlite",
+          "patterns": ["mcp-server-sqlite", "@modelcontextprotocol/server-sqlite"],
+          "description": "SQLite database operations",
+          "capabilities": ["sql_query", "database_schema", "table_operations"]
+        }
+      ]
+    },
+    "vscode-extension": {
+      "enabled": true,
+      "priority": 2,
+      "timeout": 1500,
+      "description": "Detects VS Code extensions relevant to AI development",
+      "detectionMethods": [
+        "vscode-settings",
+        "extension-manifest",
+        "workspace-settings"
+      ],
+      "overlapRules": {
+        "deduplicateBy": ["id", "name"],
+        "priorityOrder": ["enabled", "installed", "available"]
+      },
+      "searchPaths": {
+        "macos": [
+          "~/Library/Application Support/Code/User",
+          "~/.vscode/extensions"
+        ],
+        "win32": [
+          "%APPDATA%/Code/User",
+          "%USERPROFILE%/.vscode/extensions"
+        ],
+        "linux": [
+          "~/.config/Code/User",
+          "~/.vscode/extensions"
+        ]
+      },
+      "knownTools": [
+        {
+          "name": "claude-dev",
+          "patterns": ["saoudrizwan.claude-dev"],
+          "description": "Claude AI assistant integration",
+          "capabilities": ["code_generation", "code_review", "chat"]
+        },
+        {
+          "name": "github-copilot",
+          "patterns": ["github.copilot", "github.copilot-chat"],
+          "description": "GitHub Copilot AI code completion",
+          "capabilities": ["code_completion", "code_suggestion", "chat"]
+        },
+        {
+          "name": "cursor-ai",
+          "patterns": ["cursor.*"],
+          "description": "Cursor AI code editor features",
+          "capabilities": ["code_generation", "code_completion"]
+        },
+        {
+          "name": "continue-dev",
+          "patterns": ["continue.continue"],
+          "description": "Continue.dev AI coding assistant",
+          "capabilities": ["code_generation", "code_explanation", "refactoring"]
+        }
+      ]
+    },
+    "system-tool": {
+      "enabled": true,
+      "priority": 3,
+      "timeout": 1000,
+      "description": "Detects system-level tools for AI development",
+      "detectionMethods": [
+        "path-search",
+        "package-manager",
+        "brew-search",
+        "command-availability"
+      ],
+      "overlapRules": {
+        "deduplicateBy": ["command", "path"],
+        "priorityOrder": ["active", "installed", "available"]
+      },
+      "searchPaths": {
+        "macos": [
+          "/usr/local/bin",
+          "/opt/homebrew/bin",
+          "~/bin",
+          "~/.local/bin"
+        ],
+        "win32": [
+          "%PROGRAMFILES%",
+          "%PROGRAMFILES(X86)%",
+          "%USERPROFILE%/bin",
+          "%APPDATA%/npm"
+        ],
+        "linux": [
+          "/usr/bin",
+          "/usr/local/bin",
+          "~/bin",
+          "~/.local/bin"
+        ]
+      },
+      "knownTools": [
+        {
+          "name": "node",
+          "patterns": ["node", "node.exe"],
+          "description": "Node.js JavaScript runtime",
+          "capabilities": ["javascript_execution", "npm_packages", "server_hosting"],
+          "versionCommand": "node --version"
+        },
+        {
+          "name": "python",
+          "patterns": ["python", "python3", "python.exe"],
+          "description": "Python programming language",
+          "capabilities": ["script_execution", "package_management", "ai_libraries"],
+          "versionCommand": "python --version"
+        },
+        {
+          "name": "git",
+          "patterns": ["git", "git.exe"],
+          "description": "Git version control system",
+          "capabilities": ["version_control", "repository_management", "collaboration"],
+          "versionCommand": "git --version"
+        },
+        {
+          "name": "docker",
+          "patterns": ["docker", "docker.exe"],
+          "description": "Docker containerization platform",
+          "capabilities": ["containerization", "deployment", "isolation"],
+          "versionCommand": "docker --version"
+        },
+        {
+          "name": "npm",
+          "patterns": ["npm", "npm.cmd"],
+          "description": "Node Package Manager",
+          "capabilities": ["package_management", "dependency_management", "script_running"],
+          "versionCommand": "npm --version"
+        },
+        {
+          "name": "yarn",
+          "patterns": ["yarn", "yarn.cmd"],
+          "description": "Yarn package manager",
+          "capabilities": ["package_management", "dependency_management", "workspaces"],
+          "versionCommand": "yarn --version"
+        },
+        {
+          "name": "pnpm",
+          "patterns": ["pnpm", "pnpm.cmd"],
+          "description": "Fast, disk space efficient package manager",
+          "capabilities": ["package_management", "dependency_management", "monorepos"],
+          "versionCommand": "pnpm --version"
+        }
+      ]
+    },
+    "language": {
+      "enabled": true,
+      "priority": 4,
+      "timeout": 800,
+      "description": "Detects programming languages and runtimes",
+      "detectionMethods": [
+        "version-check",
+        "path-search",
+        "package-manager"
+      ],
+      "overlapRules": {
+        "deduplicateBy": ["name", "version"],
+        "priorityOrder": ["active", "installed"]
+      },
+      "knownTools": [
+        {
+          "name": "typescript",
+          "patterns": ["tsc", "typescript"],
+          "description": "TypeScript compiler and language support",
+          "capabilities": ["type_checking", "compilation", "language_server"],
+          "versionCommand": "tsc --version"
+        },
+        {
+          "name": "rust",
+          "patterns": ["rustc", "cargo"],
+          "description": "Rust programming language",
+          "capabilities": ["systems_programming", "memory_safety", "performance"],
+          "versionCommand": "rustc --version"
+        },
+        {
+          "name": "go",
+          "patterns": ["go", "go.exe"],
+          "description": "Go programming language",
+          "capabilities": ["concurrent_programming", "web_services", "cli_tools"],
+          "versionCommand": "go version"
+        },
+        {
+          "name": "java",
+          "patterns": ["java", "javac"],
+          "description": "Java programming language",
+          "capabilities": ["enterprise_development", "jvm_ecosystem", "cross_platform"],
+          "versionCommand": "java --version"
+        }
+      ]
+    },
+    "ai-assistant": {
+      "enabled": true,
+      "priority": 5,
+      "timeout": 1500,
+      "description": "Detects AI assistant tools and services",
+      "detectionMethods": [
+        "process-scan",
+        "config-scan",
+        "service-detection"
+      ],
+      "overlapRules": {
+        "deduplicateBy": ["name", "service"],
+        "priorityOrder": ["running", "configured", "installed"]
+      },
+      "knownTools": [
+        {
+          "name": "claude-desktop",
+          "patterns": ["Claude", "claude-desktop"],
+          "description": "Claude desktop application",
+          "capabilities": ["chat", "code_generation", "document_analysis"],
+          "processNames": ["Claude", "claude-desktop"]
+        },
+        {
+          "name": "cursor",
+          "patterns": ["Cursor", "cursor"],
+          "description": "Cursor AI code editor",
+          "capabilities": ["code_editing", "ai_completion", "chat"],
+          "processNames": ["Cursor"]
+        },
+        {
+          "name": "github-desktop",
+          "patterns": ["GitHub Desktop", "github-desktop"],
+          "description": "GitHub Desktop with Copilot integration",
+          "capabilities": ["git_gui", "copilot_integration", "repository_management"],
+          "processNames": ["GitHub Desktop"]
+        }
+      ]
+    }
+  },
+  "globalSettings": {
+    "enableOverlapDetection": true,
+    "showOnlyRelevantTools": true,
+    "includeVersionInfo": true,
+    "respectUserConfig": true,
+    "gracefulFallback": true,
+    "logLevel": "info"
+  },
+  "platformSpecific": {
+    "macos": {
+      "preferredPackageManager": "brew",
+      "systemPaths": ["/usr/local/bin", "/opt/homebrew/bin"],
+      "configPaths": ["~/Library/Application Support", "~/.config"]
+    },
+    "win32": {
+      "preferredPackageManager": "chocolatey",
+      "systemPaths": ["%PROGRAMFILES%", "%PROGRAMFILES(X86)%"],
+      "configPaths": ["%APPDATA%", "%LOCALAPPDATA%"]
+    },
+    "linux": {
+      "preferredPackageManager": "apt",
+      "systemPaths": ["/usr/bin", "/usr/local/bin"],
+      "configPaths": ["~/.config", "~/.local"]
+    }
+  }
+}
