@@ -60,3 +60,6 @@ temp/
 # Build outputs
 dist/
 build/
+
+# Non-project files
+untitled folder/
