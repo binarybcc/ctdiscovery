@@ -223,12 +223,65 @@ analyzeToolOrigin(tool) {
 }
 ```
 
+### 🐛 Scanner Deduplication Fix (2025-08-31)
+
+**Issue Discovered:** False duplicate detections for npm and pip in our own system
+
+#### **Root Cause Analysis:**
+- **Multi-category tools**: npm and pip listed in both 'language' and 'package-manager' categories
+- **No deduplication**: SystemToolScanner detected each tool once per category
+- **False positives**: Overlap analysis flagged legitimate categorization as duplicates
+- **User confusion**: "⚠️ Duplicate installations detected" when tools were actually fine
+
+#### **Solution Implemented:**
+- **Smart deduplication method**: `deduplicateTools()` in SystemToolScanner
+- **Category preservation**: Merges categories ("language, package-manager") instead of losing information
+- **Case-insensitive matching**: Handles edge cases in tool name variations
+- **Post-scan processing**: Deduplicates after scanning, before overlap analysis
+
+#### **Technical Implementation:**
+```javascript
+deduplicateTools(tools) {
+  const deduplicatedData = [];
+  const seenTools = new Map();
+  
+  tools.forEach(tool => {
+    const key = tool.name.toLowerCase();
+    if (!seenTools.has(key)) {
+      seenTools.set(key, tool);
+      deduplicatedData.push(tool);
+    } else {
+      // Merge categories for multi-purpose tools
+      const existing = seenTools.get(key);
+      existing.metadata.category = mergeCategories(existing, tool);
+    }
+  });
+  
+  return deduplicatedData;
+}
+```
+
+#### **Results Achieved:**
+- **Tool count accuracy**: 23 → 21 tools (correct deduplication)
+- **Clean overlap analysis**: 5 → 1 legitimate overlap (python vs python3)
+- **Accurate context warnings**: Only genuine overlaps flagged
+- **User trust maintained**: No more false positive warnings
+
+#### **Validation Confirmed:**
+- ✅ npm appears once with "language, package-manager" category
+- ✅ pip appears once with "language, package-manager" category  
+- ✅ python/python3 correctly identified as legitimate system design
+- ✅ Context warning: "✓ System and development Python versions commonly coexist"
+- ✅ Clean system status: "✅ Environment looks good!"
+
+**Key Learning:** Our overlap analysis tool successfully identified and helped us fix a bug in our own scanner - demonstrating its value for detecting both intentional and problematic overlaps.
+
 ### Next Session Focus
 - **Phase 2 implementation** - Path-based system vs user detection
+- **Scanner robustness** - Additional deduplication edge case testing
 - **Best practices research** for Node.js CLI tool development
 - **File structure standards** analysis and potential reorganization
-- **Documentation standards** review and enhancement
-- **Testing coverage** expansion for overlap analysis
+- **Testing coverage** expansion for overlap analysis and deduplication
 
 ---
 
