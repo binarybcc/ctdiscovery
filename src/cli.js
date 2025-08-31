@@ -9,6 +9,18 @@ class CTDiscovery {
     this.scanner = new EnvironmentScanner();
     this.display = new StatusDisplay();
     this.contextGenerator = new ContextGenerator();
+    
+    // Color definitions for terminal output
+    this.colors = {
+      active: '\x1b[32m',    // Green
+      available: '\x1b[32m', // Green
+      detected: '\x1b[32m',  // Green  
+      missing: '\x1b[31m',   // Red
+      error: '\x1b[31m',     // Red
+      unknown: '\x1b[33m',   // Yellow
+      warning: '\x1b[33m',   // Yellow
+      reset: '\x1b[0m'       // Reset
+    };
   }
 
   async run(options = {}) {
@@ -60,17 +72,33 @@ class CTDiscovery {
     const summary = this.calculateSummaryStats(scanResults);
     console.log(`📊 Scan: ${scanResults.scanDuration}ms | ${summary.total} tools | ${summary.active} active`);
     
-    // Category breakdowns with color coding
+    // Category breakdowns with color coding - show ALL tools
     Object.entries(scanResults.status).forEach(([category, result]) => {
       if (!result.data || result.data.length === 0) return;
       
       const categoryName = this.formatCategoryName(category);
-      const status = this.getCategoryStatus(result);
-      const statusIcon = this.getStatusIcon(status.level);
-      const toolNames = result.data.slice(0, 3).map(t => t.name).join(', ');
-      const moreCount = result.data.length > 3 ? ` (+${result.data.length - 3} more)` : '';
+      console.log(`\n📦 ${categoryName}:`);
       
-      console.log(`${statusIcon} ${categoryName}: ${toolNames}${moreCount}`);
+      // Group tools by status for better organization
+      const toolsByStatus = {};
+      result.data.forEach(tool => {
+        const status = tool.status || 'unknown';
+        if (!toolsByStatus[status]) toolsByStatus[status] = [];
+        toolsByStatus[status].push(tool);
+      });
+      
+      // Display each status group
+      Object.entries(toolsByStatus).forEach(([status, tools]) => {
+        const statusIcon = this.getStatusIcon(status);
+        const statusColor = this.getStatusColor(status);
+        console.log(`   ${statusColor}${statusIcon} ${status.toUpperCase()}:${this.colors.reset}`);
+        
+        // Show each tool with version if available
+        tools.forEach(tool => {
+          const version = tool.metadata?.version ? ` (${tool.metadata.version})` : '';
+          console.log(`      • ${tool.name}${version}`);
+        });
+      });
     });
     
     // Show issues if any
@@ -121,15 +149,24 @@ class CTDiscovery {
     return { level: 'none', text: 'none active' };
   }
 
-  getStatusIcon(level) {
+  getStatusIcon(status) {
     const icons = {
+      'active': '●',
+      'available': '●',
+      'detected': '●',
+      'missing': '○',
+      'error': '✖',
+      'unknown': '?',
       'success': '🟢',
       'partial': '🟡', 
       'warning': '🟡',
-      'error': '🔴',
       'none': '⚪'
     };
-    return icons[level] || '❓';
+    return icons[status] || '❓';
+  }
+
+  getStatusColor(status) {
+    return this.colors[status] || this.colors.reset;
   }
 }
 

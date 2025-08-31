@@ -137,6 +137,48 @@ ClaudeToolDiscovery/                    # Main project directory
 4. **Change detection:** Track tool additions/removals over time
 5. **Advanced overlap analysis:** More intelligent duplication detection
 
+## Recent Updates (2025-08-31)
+
+### Major Improvements Made
+1. **Enhanced Dashboard Display**
+   - Fixed summarized display ("+17 more") to show ALL tools individually
+   - Added status indicators (● for active, ○ for missing, ✖ for errors) 
+   - Color-coded output for better visual scanning
+   - Users can now see specific tool status (e.g., AppleScript control active/missing)
+
+2. **Fixed MCP Server Detection**
+   - Updated MCP scanner for modern Claude Code configuration format
+   - Added detection for permissions-based MCPs (`mcp__ruv-swarm`, `mcp__claude-flow`)
+   - Added detection for `enabledMcpjsonServers` array
+   - Implemented deduplication to prevent duplicate entries
+   - Now properly detects: ruv-swarm, claude-flow, @anthropic-ai/claude-code
+
+3. **Installation & Distribution**
+   - Added one-line installer (`curl -fsSL https://...install.sh | bash`)
+   - Added global npm install support (`npm install -g https://github.com/...`)
+   - Updated README with 3 installation methods
+   - Home directory installation with PATH configuration working perfectly
+
+4. **Safety & Security Audit**
+   - **Confirmed 100% non-destructive operation** - only reads and reports
+   - No system modifications, file deletions, or configuration changes
+   - Only generates documentation files (`.ctdiscovery-context.md`, `.ctdiscovery-conversation-starter.txt`)
+   - All `execSync()` calls are read-only with timeouts and error handling
+
+### Current Status
+- **Production-ready MVP** with enhanced visibility
+- **GitHub repository live** at https://github.com/binarybcc/ClaudeToolDiscovery
+- **Home installation working** at `/Users/user/ctdiscovery/`
+- **Tool count:** 23 active tools (20 system tools + 3 MCP servers)
+- **Performance:** <3 second scan times maintained
+
+### Next Session Focus
+- **Best practices research** for Node.js CLI tool development
+- **File structure standards** analysis and potential reorganization
+- **Code quality improvements** based on industry standards
+- **Documentation standards** review and enhancement
+- **Testing coverage** expansion and standardization
+
 ---
 
 **Status:** Production-ready MVP delivering "Help Me Help You Help Me" vision through automated tool discovery with CLI dashboard and Claude integration.

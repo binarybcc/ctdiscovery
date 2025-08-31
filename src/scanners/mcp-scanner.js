@@ -71,28 +71,37 @@ export class MCPScanner extends ToolScannerInterface {
       warnings: []
     };
 
+    // Global deduplication across all methods
+    const seenNames = new Set();
+
     for (const method of this.detectionMethods) {
       try {
         const methodResult = await method();
         
-        // Convert to standardized format
+        // Convert to standardized format and deduplicate globally
         if (methodResult.active) {
           methodResult.active.forEach(tool => {
-            results.data.push({
-              ...tool,
-              type: TOOL_CATEGORIES.MCP_SERVER,
-              status: TOOL_STATUSES.ACTIVE
-            });
+            if (!seenNames.has(tool.name)) {
+              seenNames.add(tool.name);
+              results.data.push({
+                ...tool,
+                type: TOOL_CATEGORIES.MCP_SERVER,
+                status: TOOL_STATUSES.ACTIVE
+              });
+            }
           });
         }
         
         if (methodResult.available) {
           methodResult.available.forEach(tool => {
-            results.data.push({
-              ...tool,
-              type: TOOL_CATEGORIES.MCP_SERVER,
-              status: TOOL_STATUSES.AVAILABLE
-            });
+            if (!seenNames.has(tool.name)) {
+              seenNames.add(tool.name);
+              results.data.push({
+                ...tool,
+                type: TOOL_CATEGORIES.MCP_SERVER,
+                status: TOOL_STATUSES.AVAILABLE
+              });
+            }
           });
         }
         
@@ -120,13 +129,14 @@ export class MCPScanner extends ToolScannerInterface {
       available: []
     };
 
-    // Get platform-specific Claude paths
-    const claudePaths = this.platformDetection.getClaudePaths();
+    // Modern Claude Code config locations
     const claudeConfigPaths = [
-      claudePaths.globalConfig,
-      claudePaths.fallback && path.join(claudePaths.fallback, 'config.json'),
-      path.join(claudePaths.localConfig, 'settings.local.json')
-    ].filter(Boolean);
+      path.join(os.homedir(), '.claude', 'settings.local.json'),
+      path.join(process.cwd(), '.claude', 'settings.local.json'),
+      // Legacy paths
+      path.join(os.homedir(), '.config', 'claude', 'config.json'),
+      '/usr/local/share/claude/config.json'
+    ];
 
     for (const configPath of claudeConfigPaths) {
       if (existsSync(configPath)) {
@@ -134,19 +144,75 @@ export class MCPScanner extends ToolScannerInterface {
           const config = JSON.parse(readFileSync(configPath, 'utf8'));
           result.method.status = 'found_config';
           
-          // Extract MCP server information from Claude config
+          // Modern Claude Code format - Extract from permissions
+          if (config.permissions && config.permissions.allow) {
+            config.permissions.allow.forEach(permission => {
+              if (typeof permission === 'string' && permission.startsWith('mcp__')) {
+                const mcpName = permission.replace('mcp__', '');
+                result.active.push({
+                  name: mcpName,
+                  type: 'mcp-server',
+                  source: 'claude-permissions',
+                  permission: permission,
+                  status: 'active',
+                  metadata: {
+                    configPath: configPath,
+                    method: 'permissions'
+                  }
+                });
+              }
+            });
+          }
+          
+          // Extract from enabledMcpjsonServers
+          if (config.enabledMcpjsonServers && Array.isArray(config.enabledMcpjsonServers)) {
+            config.enabledMcpjsonServers.forEach(serverName => {
+              result.active.push({
+                name: serverName,
+                type: 'mcp-server', 
+                source: 'claude-enabled-servers',
+                status: 'active',
+                metadata: {
+                  configPath: configPath,
+                  method: 'enabledMcpjsonServers'
+                }
+              });
+            });
+          }
+          
+          // Legacy format - Extract MCP server information from Claude config
           if (config.mcpServers) {
             Object.entries(config.mcpServers).forEach(([name, server]) => {
               result.active.push({
                 name: name,
                 type: 'mcp-server',
-                source: 'claude-config',
+                source: 'claude-config-legacy',
                 command: server.command,
                 args: server.args,
-                status: 'configured'
+                status: 'active',
+                metadata: {
+                  configPath: configPath,
+                  method: 'mcpServers'
+                }
               });
             });
           }
+
+          // Check for built-in Claude Code MCP
+          if (config.enableAllProjectMcpServers || config.permissions) {
+            result.active.push({
+              name: '@anthropic-ai/claude-code',
+              type: 'mcp-server',
+              source: 'claude-built-in',
+              status: 'active',
+              metadata: {
+                configPath: configPath,
+                method: 'built-in',
+                globalEnabled: config.enableAllProjectMcpServers
+              }
+            });
+          }
+          
         } catch (error) {
           result.method.status = 'config_parse_error';
           result.method.error = error.message;
