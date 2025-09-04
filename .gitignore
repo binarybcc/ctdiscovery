@@ -63,3 +63,19 @@ build/
 
 # Non-project files
 untitled folder/
+
+# Development and planning files (local only)
+.claude-flow*/
+.swarm/
+BRANCHING-STRATEGY.md
+ELEVATOR-PITCH.md
+IMPLEMENTATION-NOTES.md
+MARKETING-PLAN.md
+NEW-PROJECT-FILE-LIST.md
+SECURITY-AUDIT.md
+SESSION-HANDOFF*.md
+SESSION-PROGRESS.md
+PROJECT-STATUS.md
+
+# Marketing materials (private)
+marketing/
