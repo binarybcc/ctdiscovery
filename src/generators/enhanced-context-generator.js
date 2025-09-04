@@ -4,10 +4,6 @@
 
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import { dirname, join, resolve } from 'path';
-import { promisify } from 'util';
-import { exec } from 'child_process';
-
-const execAsync = promisify(exec);
 
 export class EnhancedContextGenerator {
   constructor() {
