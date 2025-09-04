@@ -1,0 +1,195 @@
+{
+  "timestamp": "2025-09-04T21:30:56.214Z",
+  "scanDuration": 4813,
+  "platform": "darwin",
+  "summary": {
+    "total": 22,
+    "active": 22,
+    "warnings": 0,
+    "errors": 0
+  },
+  "categories": {
+    "mcp-server": {
+      "total": 4,
+      "active": 4,
+      "tools": [
+        {
+          "name": "ruv-swarm",
+          "status": "active"
+        },
+        {
+          "name": "claude-flow",
+          "status": "active"
+        },
+        {
+          "name": "@anthropic-ai/claude-code",
+          "status": "active"
+        },
+        {
+          "name": "sequential-thinking__sequentialthinking",
+          "status": "active"
+        }
+      ]
+    },
+    "system-tool": {
+      "total": 18,
+      "active": 18,
+      "tools": [
+        {
+          "name": "git",
+          "status": "available",
+          "version": "2.50.1"
+        },
+        {
+          "name": "gh",
+          "status": "available",
+          "version": "2.76.2"
+        },
+        {
+          "name": "node",
+          "status": "available",
+          "version": "22.17.0"
+        },
+        {
+          "name": "npm",
+          "status": "available",
+          "version": "10.9.2"
+        },
+        {
+          "name": "python",
+          "status": "available",
+          "version": "3.12.4"
+        },
+        {
+          "name": "python3",
+          "status": "available",
+          "version": "3.12.4"
+        },
+        {
+          "name": "pip",
+          "status": "available",
+          "version": "3.12.4"
+        },
+        {
+          "name": "ruby",
+          "status": "available",
+          "version": "2.6.10"
+        },
+        {
+          "name": "java",
+          "status": "available",
+          "version": "unknown"
+        },
+        {
+          "name": "make",
+          "status": "available",
+          "version": "11.3.0"
+        },
+        {
+          "name": "docker",
+          "status": "available",
+          "version": "28.3.3"
+        },
+        {
+          "name": "brew",
+          "status": "available",
+          "version": "4.6.7"
+        },
+        {
+          "name": "gem",
+          "status": "available",
+          "version": "3.0.3"
+        },
+        {
+          "name": "claude",
+          "status": "available",
+          "version": "1.0.105"
+        },
+        {
+          "name": "code",
+          "status": "available",
+          "version": "1.103.2"
+        },
+        {
+          "name": "vim",
+          "status": "available",
+          "version": "VIM - Vi IMproved 9.1 (2024 Jan 02, compiled Jul 11 2025 21:28:27)"
+        },
+        {
+          "name": "curl",
+          "status": "available",
+          "version": "8.7.1"
+        },
+        {
+          "name": "jq",
+          "status": "available",
+          "version": "1.7.1"
+        }
+      ]
+    }
+  },
+  "aiRelevantTools": [
+    {
+      "name": "claude-flow"
+    },
+    {
+      "name": "@anthropic-ai/claude-code"
+    },
+    {
+      "name": "git",
+      "category": "version-control",
+      "description": "Distributed version control system"
+    },
+    {
+      "name": "gh",
+      "category": "version-control",
+      "description": "GitHub CLI for repository management"
+    },
+    {
+      "name": "node",
+      "category": "language",
+      "description": "JavaScript runtime environment"
+    },
+    {
+      "name": "npm",
+      "category": "language, package-manager",
+      "description": "Node.js package manager"
+    },
+    {
+      "name": "python",
+      "category": "language",
+      "description": "Python programming language"
+    },
+    {
+      "name": "python3",
+      "category": "language",
+      "description": "python3 development tool"
+    },
+    {
+      "name": "pip",
+      "category": "language, package-manager",
+      "description": "Python package manager"
+    },
+    {
+      "name": "make",
+      "category": "build-tool",
+      "description": "make development tool"
+    },
+    {
+      "name": "docker",
+      "category": "build-tool",
+      "description": "Container platform"
+    },
+    {
+      "name": "claude",
+      "category": "ai-assistant",
+      "description": "claude development tool"
+    },
+    {
+      "name": "curl",
+      "category": "development",
+      "description": "HTTP client for API testing"
+    }
+  ],
+  "capabilities": []
+}
