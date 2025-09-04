@@ -53,6 +53,7 @@
   "files": [
     "src/",
     "README.md",
+    "GETTING-STARTED.md",
     "LICENSE",
     "OVERVIEW.md"
   ]

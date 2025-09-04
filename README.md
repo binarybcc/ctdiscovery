@@ -1,9 +1,13 @@
-# CTDiscovery - AI Development Environment Status Dashboard
+# ClaudeToolDiscovery (CTD)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub release](https://img.shields.io/github/release/binarybcc/ctdiscovery.svg)](https://github.com/binarybcc/ctdiscovery/releases)
 
-Non-destructive tool discovery for AI-assisted development environments with real-time dashboard and Claude integration.
+**Know exactly what tools Claude can access in your development environment.**
+
+Eliminate "tool not available" errors and environment uncertainty with a 3-second scan that shows everything Claude can see.
+
+🎯 **New here?** Start with [GETTING-STARTED.md](./GETTING-STARTED.md) for a 2-minute setup guide.
 
 **Platform Support:**
 - ✅ **macOS** - Fully tested and supported
@@ -24,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/binarybcc/ctdiscovery/main/install.
 ```bash
 # Install globally via npm
 npm install -g https://github.com/binarybcc/ctdiscovery.git
-ctdiscovery scan  # Available anywhere
+ctd  # Available anywhere
 ```
 
 #### Option 3: Manual Install
@@ -127,13 +131,8 @@ Each new project gets:
 - **Quality Gates** - Testing, accessibility, and performance requirements
 
 ## Distribution
-This entire system is contained in a single `claude-init.sh` script that can be:
-- Downloaded and run in any directory
-- Shared with team members
-- Version controlled and updated
-- Extended with additional project types
 
-🤖 This system embodies systematic AI-developer collaboration practices developed through real project experience.
+CTD is distributed as an npm package with Node.js CLI binaries. Install globally for system-wide access or locally per project.
 
 ## Contributing
 To add new project types or improve methodologies:
