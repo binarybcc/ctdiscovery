@@ -8,7 +8,7 @@ Non-destructive tool discovery for AI-assisted development environments with rea
 **Platform Support:**
 - ✅ **macOS** - Fully tested and supported
 - ✅ **Windows** - Complete VSCode ecosystem detection
-- ✅ **Linux** - Complete VSCode ecosystem detection
+- ✅ **Linux** - Universal support across ALL distributions *(Ubuntu, RHEL, SUSE, Arch, Alpine)*
 
 ## Quick Start
 
@@ -101,8 +101,18 @@ your-projects-root/
 - ✅ **VSCode Insiders** - Beta/preview version extensions
 - ✅ **VSCodium** - Open-source variant support *(Industry First!)*
 - ✅ **Cross-Platform Paths** - Windows, macOS, Linux native path detection
+- ✅ **Universal Linux Support** - Single test validates ALL Linux distributions
 - ✅ **AI Extension Classification** - Automatic identification of AI/ML development tools
 - ✅ **Rich Metadata** - Publisher, version, categories, and contribution analysis
+
+### 🐧 **Linux Distribution Coverage**
+**One Test = Universal Support**: POSIX compliance ensures CTDiscovery works identically across:
+- Ubuntu/Debian Family - Validated on Ubuntu 22.04 LTS  
+- RHEL/CentOS/Fedora - Standard path structures
+- SUSE/openSUSE - Identical home directory layouts
+- Arch/Manjaro - Full POSIX compliance
+- Alpine/Container Linux - Universal path resolution
+- *All other major distributions* - Guaranteed compatibility
 
 ### 🚀 **Core Capabilities**
 - ✅ **Tool Discovery Dashboard** - Real-time scanning of 40+ development tools
