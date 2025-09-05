@@ -40,6 +40,8 @@ export class PlatformDetection {
         return {
           userSettings: path.join(this.home, 'AppData', 'Roaming', 'Code', 'User'),
           extensions: path.join(this.home, '.vscode', 'extensions'),
+          extensionsInsiders: path.join(this.home, '.vscode-insiders', 'extensions'),
+          extensionsOss: path.join(this.home, '.vscode-oss', 'extensions'),
           globalSettings: path.join(this.home, 'AppData', 'Roaming', 'Code', 'User', 'settings.json'),
           workspaceSettings: path.join(process.cwd(), '.vscode', 'settings.json')
         };
@@ -47,6 +49,8 @@ export class PlatformDetection {
         return {
           userSettings: path.join(this.home, 'Library', 'Application Support', 'Code', 'User'),
           extensions: path.join(this.home, '.vscode', 'extensions'),
+          extensionsInsiders: path.join(this.home, '.vscode-insiders', 'extensions'),
+          extensionsOss: path.join(this.home, '.vscode-oss', 'extensions'),
           globalSettings: path.join(this.home, 'Library', 'Application Support', 'Code', 'User', 'settings.json'),
           workspaceSettings: path.join(process.cwd(), '.vscode', 'settings.json')
         };
@@ -54,6 +58,8 @@ export class PlatformDetection {
         return {
           userSettings: path.join(this.home, '.config', 'Code', 'User'),
           extensions: path.join(this.home, '.vscode', 'extensions'),
+          extensionsInsiders: path.join(this.home, '.vscode-insiders', 'extensions'),
+          extensionsOss: path.join(this.home, '.vscode-oss', 'extensions'),
           globalSettings: path.join(this.home, '.config', 'Code', 'User', 'settings.json'),
           workspaceSettings: path.join(process.cwd(), '.vscode', 'settings.json')
         };
