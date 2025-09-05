@@ -30,6 +30,7 @@ export class EnvironmentScanner {
       this.vscodeScanner, 
       this.systemScanner
     ];
+    
 
     try {
       // Run sequential scan with timeout management

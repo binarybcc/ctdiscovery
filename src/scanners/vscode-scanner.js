@@ -1,14 +1,22 @@
 import { existsSync, readFileSync, readdirSync } from 'fs';
 import path from 'path';
 import { PlatformDetection } from '../utils/platform-detection.js';
+import { ToolScannerInterface, TOOL_STATUSES, TOOL_CATEGORIES, SCAN_STATUSES } from '../interfaces/tool-scanner-interface.js';
 
-export class VSCodeScanner {
+export class VSCodeScanner extends ToolScannerInterface {
   constructor() {
-    this.platform = new PlatformDetection();
+    super();
+    this.name = 'VSCode Extension Scanner';
+    this.category = 'vscode';
+    this.platform = 'cross-platform'; 
+    this.version = '1.0.0';
+    
+    this.platformDetection = new PlatformDetection();
   }
 
   async scan() {
     const results = {
+      data: [],
       installed: [],
       workspace: [],
       settings: {},
@@ -21,6 +29,12 @@ export class VSCodeScanner {
       const extensionResult = await this.scanInstalledExtensions();
       results.scanMethods.push(extensionResult.method);
       results.installed = extensionResult.extensions;
+      // Transform extensions for display compatibility
+      results.data = extensionResult.extensions.map(ext => ({
+        ...ext,
+        name: ext.displayName || ext.id,
+        status: 'active' // VSCode extensions are active if installed
+      }));
 
       // Scan workspace settings
       const workspaceResult = await this.scanWorkspaceSettings();
@@ -51,50 +65,70 @@ export class VSCodeScanner {
       extensions: []
     };
 
-    const vscPaths = this.platform.getVSCodePaths();
-    const extensionsPath = vscPaths.extensions;
+    const vscPaths = this.platformDetection.getVSCodePaths();
+    const extensionPaths = [
+      { path: vscPaths.extensions, variant: 'VSCode' },
+      { path: vscPaths.extensionsInsiders, variant: 'VSCode Insiders' },
+      { path: vscPaths.extensionsOss, variant: 'VSCodium' }
+    ];
 
-    if (!existsSync(extensionsPath)) {
-      result.method.status = 'extensions_dir_not_found';
-      return result;
-    }
+    let foundAnyExtensions = false;
 
-    try {
-      const extensionDirs = readdirSync(extensionsPath);
-      
-      for (const dir of extensionDirs) {
-        const extPath = path.join(extensionsPath, dir);
-        const packageJsonPath = path.join(extPath, 'package.json');
-        
-        if (existsSync(packageJsonPath)) {
-          try {
-            const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-            
-            const extension = {
-              id: packageJson.name,
-              displayName: packageJson.displayName || packageJson.name,
-              version: packageJson.version,
-              description: packageJson.description,
-              publisher: packageJson.publisher,
-              categories: packageJson.categories || [],
-              keywords: packageJson.keywords || [],
-              aiRelevant: this.isAIRelevant(packageJson),
-              contributes: this.extractContributions(packageJson.contributes),
-              path: extPath
-            };
-
-            result.extensions.push(extension);
-          } catch (parseError) {
-            // Skip malformed package.json files
-          }
-        }
+    for (const { path: extensionsPath, variant } of extensionPaths) {
+      if (!existsSync(extensionsPath)) {
+        continue; // Skip if this variant's directory doesn't exist
       }
 
+      try {
+        const extensionDirs = readdirSync(extensionsPath);
+        
+        for (const dir of extensionDirs) {
+          const extPath = path.join(extensionsPath, dir);
+          const packageJsonPath = path.join(extPath, 'package.json');
+          
+          if (existsSync(packageJsonPath)) {
+            try {
+              const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+              
+              const extension = {
+                id: packageJson.name,
+                displayName: packageJson.displayName || packageJson.name,
+                version: packageJson.version,
+                description: packageJson.description,
+                publisher: packageJson.publisher,
+                categories: packageJson.categories || [],
+                keywords: packageJson.keywords || [],
+                aiRelevant: this.isAIRelevant(packageJson),
+                contributes: this.extractContributions(packageJson.contributes),
+                path: extPath,
+                variant: variant // Track which VSCode variant this extension belongs to
+              };
+
+              result.extensions.push(extension);
+              foundAnyExtensions = true;
+            } catch (parseError) {
+              // Skip malformed package.json files
+            }
+          }
+        }
+      } catch (error) {
+        // Continue with other variants even if one fails
+        continue;
+      }
+    }
+
+    if (foundAnyExtensions) {
       result.method.status = 'completed';
       result.method.extensionsFound = result.extensions.length;
-    } catch (error) {
-      result.method.status = 'scan_error';
-      result.method.error = error.message;
+      
+      // Add variant summary to method result
+      const variantCounts = result.extensions.reduce((acc, ext) => {
+        acc[ext.variant] = (acc[ext.variant] || 0) + 1;
+        return acc;
+      }, {});
+      result.method.variantBreakdown = variantCounts;
+    } else {
+      result.method.status = 'no_extensions_found';
     }
 
     return result;
@@ -107,7 +141,7 @@ export class VSCodeScanner {
       settings: {}
     };
 
-    const vscPaths = this.platform.getVSCodePaths();
+    const vscPaths = this.platformDetection.getVSCodePaths();
     const workspaceSettingsPath = vscPaths.workspaceSettings;
 
     if (existsSync(workspaceSettingsPath)) {
@@ -148,7 +182,7 @@ export class VSCodeScanner {
       settings: {}
     };
 
-    const vscPaths = this.platform.getVSCodePaths();
+    const vscPaths = this.platformDetection.getVSCodePaths();
     const globalSettingsPath = vscPaths.globalSettings;
 
     if (existsSync(globalSettingsPath)) {
@@ -209,5 +243,39 @@ export class VSCodeScanner {
     if (installedCount > 20) return 'extension_rich';
     if (installedCount > 0) return 'basic';
     return 'minimal';
+  }
+
+  // REQUIRED INTERFACE METHODS
+  async validate() {
+    const startTime = Date.now();
+    try {
+      const vscPaths = this.platformDetection.getVSCodePaths();
+      const extensionsPath = vscPaths.extensions;
+      
+      return {
+        functional: existsSync(extensionsPath),
+        accessible: true,
+        configured: true,
+        duration: Date.now() - startTime,
+        requirements: ['VSCode extensions directory']
+      };
+    } catch (error) {
+      return {
+        functional: false,
+        accessible: false,
+        configured: false,
+        duration: Date.now() - startTime,
+        error: error.message
+      };
+    }
+  }
+
+  getCapabilities() {
+    return [
+      'Extension detection',
+      'AI-relevant extension identification', 
+      'Workspace settings analysis',
+      'Global settings analysis'
+    ];
   }
 }

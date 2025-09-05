@@ -1,9 +1,0 @@
-{
-  "servers": {
-    "@anthropic-ai/claude-code": {
-      "command": "npx",
-      "args": ["@anthropic-ai/claude-code", "mcp"],
-      "env": {}
-    }
-  }
-}

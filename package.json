@@ -1,6 +1,6 @@
 {
   "name": "ctdiscovery",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Non-destructive AI development environment scanner with real-time dashboard and Claude integration",
   "main": "src/cli.js",
   "bin": {

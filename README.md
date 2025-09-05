@@ -7,8 +7,8 @@ Non-destructive tool discovery for AI-assisted development environments with rea
 
 **Platform Support:**
 - ✅ **macOS** - Fully tested and supported
-- 🏗️ **Windows** - Architecture ready, testing needed
-- 🏗️ **Linux** - Architecture ready, testing needed
+- ✅ **Windows** - Complete VSCode ecosystem detection
+- ✅ **Linux** - Complete VSCode ecosystem detection
 
 ## Quick Start
 
@@ -95,7 +95,17 @@ your-projects-root/
 ```
 
 ## Features
-- ✅ **Tool Discovery Dashboard** - Real-time scanning of 20+ development tools
+
+### 🎯 **Complete VSCode Ecosystem Detection** *(New in v1.2.0)*
+- ✅ **Visual Studio Code** - Standard stable release extensions
+- ✅ **VSCode Insiders** - Beta/preview version extensions
+- ✅ **VSCodium** - Open-source variant support *(Industry First!)*
+- ✅ **Cross-Platform Paths** - Windows, macOS, Linux native path detection
+- ✅ **AI Extension Classification** - Automatic identification of AI/ML development tools
+- ✅ **Rich Metadata** - Publisher, version, categories, and contribution analysis
+
+### 🚀 **Core Capabilities**
+- ✅ **Tool Discovery Dashboard** - Real-time scanning of 40+ development tools
 - ✅ **Advanced Overlap Analysis** - Algorithm-based detection of tool conflicts and duplicates
 - ✅ **Claude Integration** - Context generation and conversation starters
 - ✅ **Performance Optimized** - <3 second scan times with graceful degradation
@@ -103,7 +113,6 @@ your-projects-root/
 - ✅ **Non-Destructive** - Safe to run anywhere, no system modifications
 - ✅ **Universal Project Setup** - AI collaboration methodologies and project templates
 - ✅ **CLI Dashboard** - Visual status monitoring with color-coded output
-- ✅ **Cross-Platform Ready** - Architecture supports macOS, Windows, Linux
 
 ## Project Types Supported
 - `web-app` / `website` / `frontend` - Frontend web applications
