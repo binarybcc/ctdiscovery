@@ -1,0 +1,105 @@
+{
+  "name": "ctdiscovery-vscode",
+  "displayName": "CTDiscovery - AI Environment Scanner",
+  "description": "Non-destructive AI development environment scanner with real-time dashboard and Claude integration",
+  "version": "1.2.0",
+  "publisher": "binarybcc",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Debuggers",
+    "Testing"
+  ],
+  "keywords": [
+    "ai",
+    "claude",
+    "development",
+    "tools",
+    "scanner",
+    "dashboard",
+    "environment"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ctdiscovery.scan",
+        "title": "Scan Development Environment",
+        "category": "CTDiscovery"
+      },
+      {
+        "command": "ctdiscovery.dashboard",
+        "title": "Open Dashboard",
+        "category": "CTDiscovery"
+      },
+      {
+        "command": "ctdiscovery.generateContext",
+        "title": "Generate AI Context",
+        "category": "CTDiscovery"
+      }
+    ],
+    "views": {
+      "ctdiscovery": [
+        {
+          "id": "ctdiscovery.environmentView",
+          "name": "Environment Status",
+          "when": "true"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ctdiscovery",
+          "title": "CTDiscovery",
+          "icon": "$(search-view-icon)"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CTDiscovery",
+      "properties": {
+        "ctdiscovery.autoScan": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically scan environment on startup"
+        },
+        "ctdiscovery.scanInterval": {
+          "type": "number",
+          "default": 300000,
+          "description": "Auto-refresh interval in milliseconds (5 minutes default)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/binarybcc/ctdiscovery.git"
+  },
+  "bugs": {
+    "url": "https://github.com/binarybcc/ctdiscovery/issues"
+  },
+  "homepage": "https://github.com/binarybcc/ctdiscovery#readme",
+  "license": "MIT"
+}
