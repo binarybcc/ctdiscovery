@@ -43,11 +43,32 @@ source ~/.zshrc  # or ~/.bashrc
 ### Usage
 ```bash
 # After installation, use from anywhere:
-ctd          # Run dashboard + generate context
-ctdtools     # Show conversation starter
-ctdiscovery scan    # Full dashboard (if globally installed)
-ctdiscovery tools   # Generate tools context (if globally installed)
+ctd              # Run dashboard + generate context  
+ctdtools         # Show conversation starter
+ctdiscovery scan # Full dashboard (smart wrapper)
+ctdiscovery update # Update to latest version
+ctdiscovery --help # Show all commands
 ```
+
+## 🔄 Updates & Maintenance
+
+**Easy updates with smart installer:**
+```bash
+ctdiscovery update  # Updates installation automatically
+```
+
+**Manual update:**
+```bash
+cd ~/.ctdiscovery && git pull origin main && npm install
+```
+
+**Features of improved installer:**
+- ✅ **Path-independent aliases** - work from any directory
+- ✅ **Automatic cleanup** - removes old installations  
+- ✅ **Smart wrapper** - auto-detects installation location
+- ✅ **Built-in updater** - `ctdiscovery update` command
+- ✅ **Shell detection** - works with zsh, bash, etc.
+- ✅ **Graceful fallback** - handles missing dependencies
 
 #### Local Project Usage (if not globally installed)
 ```bash

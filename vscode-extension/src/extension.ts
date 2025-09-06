@@ -1,19 +1,21 @@
 import * as vscode from 'vscode';
-import { CTDiscoveryProvider } from './ctdiscoveryProvider';
 import { ScannerService } from './services/scannerService';
 
+let scannerService: ScannerService;
+
 export function activate(context: vscode.ExtensionContext) {
-    console.log('CTDiscovery extension is now active!');
-
-    // Initialize the scanner service with the core CTDiscovery logic
-    const scannerService = new ScannerService();
+    console.log('CTDiscovery VSCode Extension is now active!');
     
-    // Create the tree data provider
-    const ctdProvider = new CTDiscoveryProvider(scannerService);
+    scannerService = new ScannerService();
     
-    // Register the tree data provider
-    vscode.window.registerTreeDataProvider('ctdiscovery.environmentView', ctdProvider);
-
+    // Only auto-scan if explicitly enabled by user
+    const config = vscode.workspace.getConfiguration('ctdiscovery');
+    if (config.get('autoScan', false)) {
+        // Auto-scan on startup only if user enabled it
+        scannerService.performScan().catch(error => {
+            console.error('Auto-scan failed:', error);
+        });
+    }
     // Register commands
     const scanCommand = vscode.commands.registerCommand('ctdiscovery.scan', async () => {
         vscode.window.showInformationMessage('Scanning development environment...');
