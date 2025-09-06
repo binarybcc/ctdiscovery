@@ -69,7 +69,7 @@
       "properties": {
         "ctdiscovery.autoScan": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Automatically scan environment on startup"
         },
         "ctdiscovery.scanInterval": {

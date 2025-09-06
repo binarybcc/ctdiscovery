@@ -8,6 +8,15 @@ export function activate(context: vscode.ExtensionContext) {
     
     scannerService = new ScannerService();
     
+    // Only auto-scan if explicitly enabled by user
+    const config = vscode.workspace.getConfiguration('ctdiscovery');
+    if (config.get('autoScan', false)) {
+        // Auto-scan on startup only if user enabled it
+        scannerService.performScan().catch(error => {
+            console.error('Auto-scan failed:', error);
+        });
+    }
+    
     // Register commands
     const scanCommand = vscode.commands.registerCommand('ctdiscovery.scan', async () => {
         try {
