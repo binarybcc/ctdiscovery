@@ -1,16 +1,32 @@
-# CTDiscovery - AI Development Environment Status Dashboard
+# CTDiscovery - AI Development Environment Status Dashboard (CLI)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub release](https://img.shields.io/github/release/binarybcc/ctdiscovery.svg)](https://github.com/binarybcc/ctdiscovery/releases)
 
-Non-destructive tool discovery for AI-assisted development environments with real-time dashboard and Claude integration.
+**Command-line tool** for non-destructive tool discovery in AI-assisted development environments with real-time dashboard and Claude integration.
 
-**Platform Support:**
-- ✅ **macOS** - Fully tested and supported
-- ✅ **Windows** - Complete VSCode ecosystem detection
-- ✅ **Linux** - Universal support across ALL distributions *(Ubuntu, RHEL, SUSE, Arch, Alpine)*
+## 🌟 Choose Your Version
 
-## Quick Start
+### 💻 **CLI Tool** (This Branch - `main`)
+- ✅ **Command-line dashboard** with real-time scanning
+- ✅ **Terminal-based interface** for developers who prefer CLI
+- ✅ **Universal compatibility** - works on any terminal
+- ✅ **Lightweight and fast** - perfect for automation and scripting
+
+### 🎨 **VSCode Extension** (Switch to `feature/vscode-extension` branch)
+- ✅ **GUI dashboard** integrated directly in VSCode
+- ✅ **Visual interface** with rich formatting and colors  
+- ✅ **IDE integration** - sidebar panels, status bar indicators
+- ✅ **Auto-refresh** on file changes and project updates
+
+**🔗 For VSCode Extension:** Switch to the [`feature/vscode-extension`](../../tree/feature/vscode-extension) branch
+
+**Platform Support (CLI):**
+- ✅ **macOS** - Fully tested and supported via terminal
+- ✅ **Windows** - Command Prompt, PowerShell, and WSL support
+- ✅ **Linux** - Universal terminal support across ALL distributions *(Ubuntu, RHEL, SUSE, Arch, Alpine)*
+
+## Quick Start (CLI Tool)
 
 ### Easy Installation Options
 
@@ -40,15 +56,17 @@ echo 'export PATH="$HOME/ctdiscovery:$PATH"' >> ~/.bashrc # bash
 source ~/.zshrc  # or ~/.bashrc
 ```
 
-### Usage
+### Usage (Command Line)
 ```bash
 # After installation, use from anywhere:
-ctd              # Run dashboard + generate context  
+ctd              # Run CLI dashboard + generate context  
 ctdtools         # Show conversation starter
-ctdiscovery scan # Full dashboard (smart wrapper)
+ctdiscovery scan # Full CLI dashboard (smart wrapper)
 ctdiscovery update # Update to latest version
 ctdiscovery --help # Show all commands
 ```
+
+**💡 Prefer a GUI?** Switch to the [`feature/vscode-extension`](../../tree/feature/vscode-extension) branch for the VSCode extension with visual dashboard.
 
 ## 🔄 Updates & Maintenance
 
