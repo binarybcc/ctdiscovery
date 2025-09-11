@@ -24,6 +24,20 @@ class CTDiscovery {
   }
 
   async run(options = {}) {
+    // Handle Claude Tools CLI commands first
+    if (options.toolsList) {
+      return await this.handleToolsList(options);
+    }
+    if (options.toolsInspect) {
+      return await this.handleToolsInspect(options.toolsInspect, options);
+    }
+    if (options.mcpServers) {
+      return await this.handleMcpServers(options);
+    }
+    if (options.mcpInspect) {
+      return await this.handleMcpInspect(options.mcpInspect, options);
+    }
+    
     console.log('🔍 CTDiscovery - AI Development Environment Status\n');
     
     try {
@@ -168,9 +182,161 @@ class CTDiscovery {
   getStatusColor(status) {
     return this.colors[status] || this.colors.reset;
   }
+
+  // Claude Tools CLI command handlers
+  async handleToolsList(options) {
+    console.log('🔍 CTDiscovery - Available Tools\n');
+    
+    const status = await this.scanner.scan();
+    const allTools = this.extractAllTools(status);
+    const filteredTools = this.applyFilters(allTools, options);
+    
+    if (options.format === 'json') {
+      console.log(JSON.stringify(filteredTools, null, 2));
+    } else {
+      this.displayToolsList(filteredTools);
+    }
+  }
+
+  async handleToolsInspect(toolName, options) {
+    const status = await this.scanner.scan();
+    const allTools = this.extractAllTools(status);
+    const tool = allTools.find(t => t.name.toLowerCase().includes(toolName.toLowerCase()));
+    
+    if (!tool) {
+      console.log(`❌ Tool '${toolName}' not found`);
+      console.log(`\nAvailable tools: ${allTools.map(t => t.name).join(', ')}`);
+      return;
+    }
+    
+    if (options.format === 'json') {
+      console.log(JSON.stringify(tool, null, 2));
+    } else {
+      this.displayToolInspection(tool);
+    }
+  }
+
+  async handleMcpServers(options) {
+    console.log('🔍 CTDiscovery - MCP Servers\n');
+    
+    const status = await this.scanner.scan();
+    const mcpServers = status.mcpServers?.data || [];
+    
+    if (options.format === 'json') {
+      console.log(JSON.stringify(mcpServers, null, 2));
+    } else {
+      this.displayMcpServersList(mcpServers);
+    }
+  }
+
+  async handleMcpInspect(serverName, options) {
+    const status = await this.scanner.scan();
+    const mcpServers = status.mcpServers?.data || [];
+    const server = mcpServers.find(s => s.name.toLowerCase().includes(serverName.toLowerCase()));
+    
+    if (!server) {
+      console.log(`❌ MCP server '${serverName}' not found`);
+      console.log(`\nAvailable servers: ${mcpServers.map(s => s.name).join(', ')}`);
+      return;
+    }
+    
+    if (options.format === 'json') {
+      console.log(JSON.stringify(server, null, 2));
+    } else {
+      this.displayMcpServerInspection(server);
+    }
+  }
+
+  // Utility methods
+  extractAllTools(scanResults) {
+    const tools = [];
+    Object.entries(scanResults.status).forEach(([category, result]) => {
+      if (result.data && Array.isArray(result.data)) {
+        result.data.forEach(tool => {
+          tools.push({
+            ...tool,
+            category,
+            source: 'ctdiscovery'
+          });
+        });
+      }
+    });
+    return tools;
+  }
+
+  applyFilters(tools, options) {
+    let filtered = [...tools];
+    
+    if (options.filter) {
+      const pattern = options.filter.toLowerCase();
+      filtered = filtered.filter(tool => 
+        tool.name.toLowerCase().includes(pattern) ||
+        (tool.description && tool.description.toLowerCase().includes(pattern))
+      );
+    }
+    
+    if (options.status) {
+      filtered = filtered.filter(tool => tool.status === options.status);
+    }
+    
+    return filtered;
+  }
+
+  displayToolsList(tools) {
+    console.log(`Found ${tools.length} tools:\n`);
+    
+    tools.forEach(tool => {
+      const status = this.getStatusIcon(tool.status);
+      const version = tool.metadata?.version ? ` (${tool.metadata.version})` : '';
+      console.log(`${status} ${tool.name}${version} - ${tool.category}`);
+    });
+  }
+
+  displayToolInspection(tool) {
+    console.log(`🔍 ${tool.name} - Detailed Information`);
+    console.log('═'.repeat(50));
+    console.log(`Status: ${this.getStatusIcon(tool.status)} ${tool.status}`);
+    console.log(`Category: ${tool.category}`);
+    if (tool.metadata?.version) {
+      console.log(`Version: ${tool.metadata.version}`);
+    }
+    if (tool.description) {
+      console.log(`Description: ${tool.description}`);
+    }
+    if (tool.metadata) {
+      console.log('\nMetadata:');
+      console.log(JSON.stringify(tool.metadata, null, 2));
+    }
+  }
+
+  displayMcpServersList(servers) {
+    console.log(`Found ${servers.length} MCP servers:\n`);
+    
+    servers.forEach(server => {
+      const status = this.getStatusIcon(server.status);
+      console.log(`${status} ${server.name} - ${server.status}`);
+    });
+  }
+
+  displayMcpServerInspection(server) {
+    console.log(`🔍 ${server.name} - MCP Server Details`);
+    console.log('═'.repeat(50));
+    console.log(`Status: ${this.getStatusIcon(server.status)} ${server.status}`);
+    console.log(`Type: ${server.type || 'MCP Server'}`);
+    if (server.metadata) {
+      console.log('\nServer Details:');
+      console.log(JSON.stringify(server.metadata, null, 2));
+    }
+  }
 }
 
 const args = process.argv.slice(2);
+
+// Helper function to get argument values
+function getArgValue(args, flag) {
+  const index = args.indexOf(flag);
+  return index >= 0 && index + 1 < args.length ? args[index + 1] : null;
+}
 
 // Handle special commands
 if (args.includes('help') || args.includes('--help') || args.includes('-h')) {
@@ -182,8 +348,19 @@ USAGE:
   npm run scan                 # Scan + generate context files
   npm run tools                # Quick conversation starter
   
+CLAUDE TOOLS CLI:
+  --tools-list                 # List all available tools
+  --tools-inspect <tool>       # Inspect specific tool
+  --mcp-servers                # List MCP servers
+  --mcp-inspect <server>       # Inspect MCP server
+  
+CLAUDE TOOLS OPTIONS:
+  --format <format>            # Output format: human, json, table
+  --filter <pattern>           # Filter by name pattern
+  --status <status>            # Filter by status: active, missing, error
+  
 OPTIONS:
-  --json                       # JSON output format
+  --json                       # JSON output format (legacy)
   --verbose                    # Detailed information
   --dev                        # Development mode
   --generate-context           # Create .ctdiscovery-context.md
@@ -194,11 +371,23 @@ OPTIONS:
 
 EXAMPLES:
   npm start --generate-context    # Scan + create context file
-  npm start --conversation-starter --show-starter    # Show starter
-  npm start --all --quiet         # Generate files without display
+  npm start --tools-list --format=json    # List tools as JSON
+  npm start --tools-inspect npm           # Inspect npm tool
+  npm start --mcp-servers                 # List MCP servers
 `);
   process.exit(0);
 }
+
+// Claude Tools CLI options
+const claudeToolsOptions = {
+  toolsList: args.includes('--tools-list'),
+  toolsInspect: getArgValue(args, '--tools-inspect'),
+  mcpServers: args.includes('--mcp-servers'),
+  mcpInspect: getArgValue(args, '--mcp-inspect'),
+  format: getArgValue(args, '--format') || 'human',
+  filter: getArgValue(args, '--filter'),
+  status: getArgValue(args, '--status')
+};
 
 const options = {
   dev: args.includes('--dev'),
@@ -208,8 +397,11 @@ const options = {
   conversationStarter: args.includes('--conversation-starter'),
   showStarter: args.includes('--show-starter'),
   all: args.includes('--all'),
-  quiet: args.includes('--quiet')
+  quiet: args.includes('--quiet'),
+  ...claudeToolsOptions
 };
 
 const discovery = new CTDiscovery();
 discovery.run(options);
+
+export { CTDiscovery };
