@@ -94,27 +94,6 @@ npm start            # Full detailed output
 npm test             # Run test suite
 ```
 
-## System Structure
-```
-your-projects-root/
-├── CLAUDE-UNIVERSAL-CONFIG.md       # Universal AI collaboration standards
-├── PROJECT-STARTUP-CHECKLIST.md    # Architecture decision frameworks
-├── TOOL-INVENTORY-TEMPLATE.md       # Tool discovery system
-├── .claude/settings.local.json     # Universal Claude permissions
-├── init-project.sh                 # Project creation script
-├── README.md                       # This documentation
-├── project-1/
-│   ├── CLAUDE.md                    # Project-specific context
-│   ├── .claude/settings.local.json # Project permissions
-│   ├── README.md                    # Project documentation
-│   └── .gitignore                   # Project-appropriate ignores
-└── project-2/
-    ├── CLAUDE.md
-    ├── .claude/settings.local.json
-    ├── README.md
-    └── .gitignore
-```
-
 ## Features
 
 ### 🎯 **Complete VSCode Ecosystem Detection** *(New in v1.2.0)*
@@ -223,33 +202,89 @@ ctd --generate-context       # Create detailed context file
 
 ### Dashboard View
 ```
+➜  ~ ctd
+🔍 CTDiscovery - AI Development Environment Status
+
+🔍 Starting sequential scan of 3 scanners...
+📊 Scanning MCP Server Scanner (timeout: 2000ms)...
+✅ MCP Server Scanner completed in 175ms
+📊 Scanning VSCode Extension Scanner (timeout: 2000ms)...
+✅ VSCode Extension Scanner completed in 8ms
+📊 Scanning System Tool Scanner (timeout: 2000ms)...
+✅ System Tool Scanner completed in 3208ms
+🏁 Sequential scan completed in 3391ms
+📊 Results: 3 completed, 0 failed, 0 skipped
 🔍 TOOL DISCOVERY DASHBOARD
 ══════════════════════════════════════════════════
-📊 Scan: 2383ms | 44 tools | 44 active
+📊 Scan: 3391ms | 52 tools | 52 active
 
 📦 MCP Servers:
    ● ACTIVE:
+      • ruv-swarm
       • claude-flow
+      • flow-nexus__sandbox_create
+      • flow-nexus__sandbox_execute
+      • sequential-thinking__sequentialthinking
+      • flow-nexus__swarm_templates_list
+      • flow-nexus__neural_list_templates
+      • github__search_repositories
+      • github__get_file_contents
+      • context7__resolve-library-id
+      • context7__get-library-docs
+      • memory__create_entities
       • @anthropic-ai/claude-code
-      • sequential-thinking
 
 📦 VSCode:
    ● ACTIVE:
+      • Better Comments
       • Claude Code for VSCode
-      • GitLens — Git supercharged
-      • Python
+      • Claude Code for VS Code
+      • Bracket Pair Color DLW
+      • Path Intellisense
       • ESLint
+      • GitLens — Git supercharged
       • Prettier - Code formatter
-      [... 17 more extensions]
+      • Auto Rename Tag
+      • REST Client
+      • Rainbow CSV
+      • Container Tools
+      • Python Debugger
+      • Python
+      • Pylance
+      • Python Environments
+      • %displayName%
+      • Live Preview
+      • indent-rainbow
+      • Material Icon Theme
+      • YAML
 
 📦 System Tools:
    ● AVAILABLE:
-      • git (2.50.1)
+      • git (2.51.0)
+      • gh (2.79.0)
       • node (22.17.0)
+      • npm (10.9.2)
       • python (3.12.4)
+      • python3 (3.12.4)
+      • pip (3.12.4)
+      • ruby (2.6.10)
+      • java (unknown)
+      • make (11.3.0)
       • docker (28.3.3)
-      [... 14 more tools]
+      • brew (4.6.10)
+      • gem (3.0.3)
+      • claude (1.0.110)
+      • code (1.103.2)
+      • vim (VIM - Vi IMproved 9.1 (2024 Jan 02, compiled Jul 11 2025 21:28:27))
+      • curl (8.7.1)
+      • jq (1.7.1)
 ══════════════════════════════════════════════════
+
+📄 Generating context files...
+📄 Generated context file: .ctdiscovery-context.md
+
+💬 Generating conversation starter...
+💬 Generated conversation starter: .ctdiscovery-conversation-starter.txt
 ```
 
 ## Platform-Specific Notes
@@ -272,12 +307,7 @@ ctd --generate-context       # Create detailed context file
 ## Advanced Features
 
 ### VSCode Extension Analysis
-CTDiscovery provides detailed analysis of your VSCode extensions:
-
-```bash
-ctd --json | jq '.status.vscode.data[] | select(.aiRelevant == true)'
-# Shows only AI-relevant extensions with full metadata
-```
+CTDiscovery provides detailed analysis of your VSCode extensions
 
 ### Tool Overlap Detection
 Automatically identifies functional overlaps between tools:
@@ -324,12 +354,6 @@ Generate context for AI assistants:
 ---
 
 **Version**: 1.2.0 | **Platform Support**: Windows, macOS, Linux | **Node.js**: 16.0.0+
-## Contributing
-To add new project types or improve methodologies:
-1. Update the relevant universal files
-2. Test with `./init-project.sh new-type test-project`
-3. Verify all generated files and folder structure
-4. Update documentation
 
 ---
 **Created with Claude Code - AI-Assisted Development**
