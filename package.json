@@ -16,8 +16,16 @@
     "context": "node src/cli.js --generate-context --quiet",
     "dashboard": "node src/cli.js --all --quiet",
     "watch": "watch -n 30 'npm run dashboard'",
+    "enhanced": "node src/enhanced-tools-cli.js",
+    "tools:list": "node src/enhanced-tools-cli.js tools list",
+    "tools:inspect": "node src/enhanced-tools-cli.js tools inspect",
+    "mcp:servers": "node src/enhanced-tools-cli.js mcp servers",
+    "mcp:inspect": "node src/enhanced-tools-cli.js mcp inspect",
     "test": "node --test src/test/*.test.js",
-    "test:watch": "node --test --watch src/test/*.test.js"
+    "test:watch": "node --test --watch src/test/*.test.js",
+    "clean:smart": "node src/scripts/session-cleanup.js smart",
+    "clean:sessions": "node src/scripts/session-cleanup.js basic",
+    "archive:sessions": "mkdir -p .sessions/archive/$(date +%Y-%m) && mv .sessions/active/*.md .sessions/archive/$(date +%Y-%m)/ 2>/dev/null || true"
   },
   "keywords": [
     "ai",

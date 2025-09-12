@@ -144,6 +144,7 @@ class CTDiscovery {
   formatCategoryName(category) {
     return category.replace(/([A-Z])/g, ' $1')
                   .replace(/^./, str => str.toUpperCase())
+                  .replace('Mcp Servers', 'MCP Servers')
                   .replace('Mcp-server', 'MCP Servers')
                   .replace('System-tool', 'System Tools')
                   .replace('Vscode', 'VSCode');
@@ -185,14 +186,22 @@ class CTDiscovery {
 
   // Claude Tools CLI command handlers
   async handleToolsList(options) {
-    console.log('🔍 CTDiscovery - Available Tools\n');
+    if (!options.quiet) {
+      console.log('🔍 CTDiscovery - Available Tools\n');
+    }
     
     const status = await this.scanner.scan();
     const allTools = this.extractAllTools(status);
     const filteredTools = this.applyFilters(allTools, options);
     
     if (options.format === 'json') {
-      console.log(JSON.stringify(filteredTools, null, 2));
+      const versionedOutput = {
+        version: 1,
+        tools: filteredTools
+      };
+      console.log(JSON.stringify(versionedOutput, null, 2));
+    } else if (options.format === 'table') {
+      this.displayToolsTable(filteredTools);
     } else {
       this.displayToolsList(filteredTools);
     }
@@ -210,20 +219,33 @@ class CTDiscovery {
     }
     
     if (options.format === 'json') {
-      console.log(JSON.stringify(tool, null, 2));
+      const versionedOutput = {
+        version: 1,
+        tool: tool
+      };
+      console.log(JSON.stringify(versionedOutput, null, 2));
     } else {
       this.displayToolInspection(tool);
     }
   }
 
   async handleMcpServers(options) {
-    console.log('🔍 CTDiscovery - MCP Servers\n');
+    if (!options.quiet) {
+      console.log('🔍 CTDiscovery - MCP Servers\n');
+    }
     
     const status = await this.scanner.scan();
-    const mcpServers = status.mcpServers?.data || [];
+    const allTools = this.extractAllTools(status);
+    const mcpServers = allTools.filter(tool => tool.category === 'mcp-server');
     
     if (options.format === 'json') {
-      console.log(JSON.stringify(mcpServers, null, 2));
+      const versionedOutput = {
+        version: 1,
+        servers: mcpServers
+      };
+      console.log(JSON.stringify(versionedOutput, null, 2));
+    } else if (options.format === 'table') {
+      this.displayMcpServersTable(mcpServers);
     } else {
       this.displayMcpServersList(mcpServers);
     }
@@ -231,7 +253,8 @@ class CTDiscovery {
 
   async handleMcpInspect(serverName, options) {
     const status = await this.scanner.scan();
-    const mcpServers = status.mcpServers?.data || [];
+    const allTools = this.extractAllTools(status);
+    const mcpServers = allTools.filter(tool => tool.category === 'mcp-server');
     const server = mcpServers.find(s => s.name.toLowerCase().includes(serverName.toLowerCase()));
     
     if (!server) {
@@ -241,7 +264,11 @@ class CTDiscovery {
     }
     
     if (options.format === 'json') {
-      console.log(JSON.stringify(server, null, 2));
+      const versionedOutput = {
+        version: 1,
+        server: server
+      };
+      console.log(JSON.stringify(versionedOutput, null, 2));
     } else {
       this.displayMcpServerInspection(server);
     }
@@ -328,6 +355,69 @@ class CTDiscovery {
       console.log(JSON.stringify(server.metadata, null, 2));
     }
   }
+
+  displayToolsTable(tools) {
+    if (tools.length === 0) {
+      console.log('No tools found.');
+      return;
+    }
+
+    // Calculate column widths
+    const maxNameWidth = Math.max(4, ...tools.map(t => t.name.length));
+    const maxCategoryWidth = Math.max(8, ...tools.map(t => t.category.length));
+    const maxVersionWidth = Math.max(7, ...tools.map(t => (t.metadata?.version || '').length));
+    
+    // Headers
+    const nameHeader = 'Name'.padEnd(maxNameWidth);
+    const categoryHeader = 'Category'.padEnd(maxCategoryWidth);
+    const versionHeader = 'Version'.padEnd(maxVersionWidth);
+    const statusHeader = 'Status';
+    
+    console.log(`${nameHeader} | ${categoryHeader} | ${versionHeader} | ${statusHeader}`);
+    console.log('-'.repeat(nameHeader.length + categoryHeader.length + versionHeader.length + statusHeader.length + 9));
+    
+    // Data rows
+    tools.forEach(tool => {
+      const name = tool.name.padEnd(maxNameWidth);
+      const category = tool.category.padEnd(maxCategoryWidth);
+      const version = (tool.metadata?.version || '').padEnd(maxVersionWidth);
+      const status = `${this.getStatusIcon(tool.status)} ${tool.status}`;
+      
+      console.log(`${name} | ${category} | ${version} | ${status}`);
+    });
+    
+    console.log(`\nTotal: ${tools.length} tools`);
+  }
+
+  displayMcpServersTable(servers) {
+    if (servers.length === 0) {
+      console.log('No MCP servers found.');
+      return;
+    }
+
+    // Calculate column widths
+    const maxNameWidth = Math.max(4, ...servers.map(s => s.name.length));
+    const maxTypeWidth = Math.max(4, ...servers.map(s => (s.type || 'MCP Server').length));
+    
+    // Headers
+    const nameHeader = 'Name'.padEnd(maxNameWidth);
+    const typeHeader = 'Type'.padEnd(maxTypeWidth);
+    const statusHeader = 'Status';
+    
+    console.log(`${nameHeader} | ${typeHeader} | ${statusHeader}`);
+    console.log('-'.repeat(nameHeader.length + typeHeader.length + statusHeader.length + 5));
+    
+    // Data rows
+    servers.forEach(server => {
+      const name = server.name.padEnd(maxNameWidth);
+      const type = (server.type || 'MCP Server').padEnd(maxTypeWidth);
+      const status = `${this.getStatusIcon(server.status)} ${server.status}`;
+      
+      console.log(`${name} | ${type} | ${status}`);
+    });
+    
+    console.log(`\nTotal: ${servers.length} servers`);
+  }
 }
 
 const args = process.argv.slice(2);
@@ -370,10 +460,11 @@ OPTIONS:
   --quiet                      # Suppress normal output
 
 EXAMPLES:
-  npm start --generate-context    # Scan + create context file
-  npm start --tools-list --format=json    # List tools as JSON
-  npm start --tools-inspect npm           # Inspect npm tool
-  npm start --mcp-servers                 # List MCP servers
+  npm start --generate-context              # Scan + create context file
+  npm start --tools-list --format=json      # List tools as JSON (versioned)
+  npm start --tools-list --format=table     # List tools in table format
+  npm start --tools-inspect npm             # Inspect npm tool
+  npm start --mcp-servers --format=table    # List MCP servers in table format
 `);
   process.exit(0);
 }

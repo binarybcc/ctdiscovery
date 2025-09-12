@@ -64,9 +64,18 @@ build/
 # Non-project files
 untitled folder/
 
+# Session files and development artifacts (NEVER commit these)
+.sessions/
+*.session
+*.session.*
+session-*
+*-session*
+*-SESSION*
+
 # Development and planning files (local only)
 .claude-flow*/
 .swarm/
+.sessions/
 BRANCHING-STRATEGY.md
 ELEVATOR-PITCH.md
 IMPLEMENTATION-NOTES.md
@@ -78,5 +87,99 @@ SESSION-PROGRESS.md
 PROJECT-STATUS.md
 OVERVIEW.md
 
+# Additional session and temporary files
+*-NOTES.md
+*-HANDOFF.md
+DEBUGGING-*.md
+CONTINUATION-*.md
+
 # Marketing materials (private)
-marketing/.DS_Store
+marketing/
+
+# Comprehensive temporary and development artifact protection
+**/*-temp*
+**/*temp*
+**/*TEMP*
+**/.temp*
+**/temp-*
+**/TEMP-*
+**/*-draft*
+**/*draft*
+**/*DRAFT*
+**/.draft*
+**/draft-*
+**/DRAFT-*
+**/*-work*
+**/*work*
+**/*WORK*
+**/.work*
+**/work-*
+**/WORK-*
+**/*-dev*
+**/*dev*
+**/*DEV*
+**/.dev*
+**/dev-*
+**/DEV-*
+**/*-test*
+**/.test*
+**/test-*
+**/*-scratch*
+**/*scratch*
+**/*SCRATCH*
+**/.scratch*
+**/scratch-*
+**/SCRATCH-*
+**/*-notes*
+**/*notes*
+**/*NOTES*
+**/.notes*
+**/notes-*
+**/NOTES-*
+**/*-backup*
+**/*backup*
+**/*BACKUP*
+**/.backup*
+**/backup-*
+**/BACKUP-*
+**/*-old*
+**/*old*
+**/*OLD*
+**/.old*
+**/old-*
+**/OLD-*
+
+# VSCode extension development artifacts
+vscode-extension/*.vsix
+vscode-extension/CONTINUATION-NOTES.md
+vscode-extension/DEBUGGING-NOTES.md
+vscode-extension/INSTALLATION.md
+vscode-extension/test-*.js
+vscode-extension/*.scpt
+vscode-extension/package-lock.json
+
+# Claude and AI development artifacts  
+.claude/
+*.claude
+*.claude.*
+claude-*
+*-claude*
+*-CLAUDE*
+*.ai
+*.ai.*
+ai-*
+*-ai*
+*-AI*
+
+# Debug and investigation files
+DEBUG-*.md
+debug-*
+*-debug*
+*DEBUG*
+INVESTIGATION-*.md
+investigation-*
+*-investigation*
+*INVESTIGATION*
+
+# Branch structure documentation (private)
+BRANCH-STRUCTURE.md
