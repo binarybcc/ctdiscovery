@@ -7,6 +7,39 @@
 
 This special edition of CTDiscovery implements CLI commands that functionally replicate the requested Claude Code tool inspection capabilities while leveraging CTDiscovery's comprehensive environment scanning infrastructure.
 
+## 🎉 **NEW in v1.1.0**: Claude Code MCP Manager Source of Truth
+
+**✅ BREAKTHROUGH: Direct Integration with Claude Code's Internal MCP Manager**
+
+We've implemented the **source of truth** requirement by directly accessing Claude Code's internal MCP manager instead of parsing configuration files:
+
+### **🔧 Technical Achievement**
+- **Real-time MCP server connections** via `claude mcp list` and `claude mcp get`
+- **Post-permission resolution data** - actual runtime state, not config files
+- **Live connection health monitoring** - see actual server status
+- **Complete server metadata** - commands, URLs, headers, capabilities
+
+### **📊 Enhanced Data Quality**
+```json
+{
+  "version": 1,
+  "servers": [...],
+  "metadata": {
+    "sourceOfTruth": "claude-code-mcp-manager",
+    "connectedServers": 5,
+    "totalServers": 5
+  }
+}
+```
+
+### **🎯 Key Benefits**
+- ✅ **No false positives** - only shows actually connected servers
+- ✅ **Real configuration** - actual commands and URLs in use  
+- ✅ **Health monitoring** - live connection status
+- ✅ **Complete accuracy** - post-permission resolution state
+
+**See**: [Claude MCP Manager Documentation](./CLAUDE-MCP-MANAGER-SOURCE-OF-TRUTH.md)
+
 ---
 
 ## ✅ **Implemented Features**

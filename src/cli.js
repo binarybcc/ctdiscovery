@@ -3,12 +3,14 @@
 import { EnvironmentScanner } from './scanners/environment-scanner.js';
 import { StatusDisplay } from './display/status-display.js';
 import { ContextGenerator } from './generators/context-generator.js';
+import { ClaudeMCPManager } from './scanners/claude-mcp-manager.js';
 
 class CTDiscovery {
   constructor() {
     this.scanner = new EnvironmentScanner();
     this.display = new StatusDisplay();
     this.contextGenerator = new ContextGenerator();
+    this.claudeMCPManager = new ClaudeMCPManager();
     
     // Color definitions for terminal output
     this.colors = {
@@ -231,46 +233,135 @@ class CTDiscovery {
 
   async handleMcpServers(options) {
     if (!options.quiet) {
-      console.log('🔍 CTDiscovery - MCP Servers\n');
+      console.log('🔍 CTDiscovery - MCP Servers (Claude Code Source of Truth)\n');
     }
     
-    const status = await this.scanner.scan();
-    const allTools = this.extractAllTools(status);
-    const mcpServers = allTools.filter(tool => tool.category === 'mcp-server');
-    
-    if (options.format === 'json') {
-      const versionedOutput = {
-        version: 1,
-        servers: mcpServers
-      };
-      console.log(JSON.stringify(versionedOutput, null, 2));
-    } else if (options.format === 'table') {
-      this.displayMcpServersTable(mcpServers);
-    } else {
-      this.displayMcpServersList(mcpServers);
+    try {
+      // Use Claude MCP Manager as source of truth instead of regular scanner
+      const mcpResults = await this.claudeMCPManager.scan();
+      const mcpServers = mcpResults.data || [];
+      
+      // Add source-of-truth metadata
+      const serversWithMetadata = mcpServers.map(server => ({
+        ...server,
+        category: 'mcp-server',
+        source: 'claude-mcp-manager',
+        sourceOfTruth: true
+      }));
+      
+      if (options.format === 'json') {
+        const versionedOutput = {
+          version: 1,
+          servers: serversWithMetadata,
+          metadata: {
+            scanStatus: mcpResults.status,
+            scanDuration: mcpResults.method.duration,
+            sourceOfTruth: 'claude-code-mcp-manager',
+            totalServers: serversWithMetadata.length,
+            connectedServers: serversWithMetadata.filter(s => s.status === 'active').length
+          }
+        };
+        console.log(JSON.stringify(versionedOutput, null, 2));
+      } else if (options.format === 'table') {
+        this.displayMcpServersTable(serversWithMetadata);
+      } else {
+        this.displayMcpServersList(serversWithMetadata);
+      }
+    } catch (error) {
+      console.error(`❌ Failed to access Claude Code MCP manager: ${error.message}`);
+      console.log('\n💡 Falling back to configuration file scanning...\n');
+      
+      // Fallback to original method
+      const status = await this.scanner.scan();
+      const allTools = this.extractAllTools(status);
+      const mcpServers = allTools.filter(tool => tool.category === 'mcp-server');
+      
+      if (options.format === 'json') {
+        const versionedOutput = {
+          version: 1,
+          servers: mcpServers,
+          metadata: {
+            fallbackMode: true,
+            sourceOfTruth: 'config-file-parsing'
+          }
+        };
+        console.log(JSON.stringify(versionedOutput, null, 2));
+      } else if (options.format === 'table') {
+        this.displayMcpServersTable(mcpServers);
+      } else {
+        this.displayMcpServersList(mcpServers);
+      }
     }
   }
 
   async handleMcpInspect(serverName, options) {
-    const status = await this.scanner.scan();
-    const allTools = this.extractAllTools(status);
-    const mcpServers = allTools.filter(tool => tool.category === 'mcp-server');
-    const server = mcpServers.find(s => s.name.toLowerCase().includes(serverName.toLowerCase()));
-    
-    if (!server) {
-      console.log(`❌ MCP server '${serverName}' not found`);
-      console.log(`\nAvailable servers: ${mcpServers.map(s => s.name).join(', ')}`);
-      return;
-    }
-    
-    if (options.format === 'json') {
-      const versionedOutput = {
-        version: 1,
-        server: server
+    try {
+      // Use Claude MCP Manager as source of truth
+      const mcpResults = await this.claudeMCPManager.scan();
+      const mcpServers = mcpResults.data || [];
+      const server = mcpServers.find(s => s.name.toLowerCase().includes(serverName.toLowerCase()));
+      
+      if (!server) {
+        console.log(`❌ MCP server '${serverName}' not found in Claude Code MCP manager`);
+        console.log(`\nAvailable servers: ${mcpServers.map(s => s.name).join(', ')}`);
+        return;
+      }
+      
+      // Add enhanced metadata from source of truth
+      const enhancedServer = {
+        ...server,
+        category: 'mcp-server',
+        source: 'claude-mcp-manager',
+        sourceOfTruth: true,
+        inspectionMetadata: {
+          scannedAt: new Date().toISOString(),
+          scanDuration: mcpResults.method.duration,
+          scanStatus: mcpResults.status,
+          sourceOfTruth: 'claude-code-mcp-manager'
+        }
       };
-      console.log(JSON.stringify(versionedOutput, null, 2));
-    } else {
-      this.displayMcpServerInspection(server);
+      
+      if (options.format === 'json') {
+        const versionedOutput = {
+          version: 1,
+          server: enhancedServer
+        };
+        console.log(JSON.stringify(versionedOutput, null, 2));
+      } else {
+        this.displayMcpServerInspection(enhancedServer);
+      }
+    } catch (error) {
+      console.error(`❌ Failed to access Claude Code MCP manager: ${error.message}`);
+      console.log('\n💡 Falling back to configuration file scanning...\n');
+      
+      // Fallback to original method
+      const status = await this.scanner.scan();
+      const allTools = this.extractAllTools(status);
+      const mcpServers = allTools.filter(tool => tool.category === 'mcp-server');
+      const server = mcpServers.find(s => s.name.toLowerCase().includes(serverName.toLowerCase()));
+      
+      if (!server) {
+        console.log(`❌ MCP server '${serverName}' not found`);
+        console.log(`\nAvailable servers: ${mcpServers.map(s => s.name).join(', ')}`);
+        return;
+      }
+      
+      if (options.format === 'json') {
+        const versionedOutput = {
+          version: 1,
+          server: {
+            ...server,
+            metadata: {
+              ...server.metadata,
+              fallbackMode: true,
+              sourceOfTruth: 'config-file-parsing'
+            }
+          }
+        };
+        console.log(JSON.stringify(versionedOutput, null, 2));
+      } else {
+        this.displayMcpServerInspection(server);
+      }
     }
   }
 
@@ -424,6 +515,13 @@ const args = process.argv.slice(2);
 
 // Helper function to get argument values
 function getArgValue(args, flag) {
+  // Handle --flag=value format
+  const flagWithEquals = args.find(arg => arg.startsWith(`${flag}=`));
+  if (flagWithEquals) {
+    return flagWithEquals.split('=')[1];
+  }
+  
+  // Handle --flag value format
   const index = args.indexOf(flag);
   return index >= 0 && index + 1 < args.length ? args[index + 1] : null;
 }
