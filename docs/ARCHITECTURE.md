@@ -1,8 +1,8 @@
 # Claude Tool Discovery - Architecture Documentation
 
-**Version**: v2.0.0  
+**Version**: v2.1.0  
 **Branch**: `feature/claude-tools-cli-simple`  
-**Last Updated**: 2025-09-12
+**Last Updated**: 2025-09-13 (Major Refactoring)
 
 ## Overview
 
@@ -212,6 +212,12 @@ async _getServerDetails(serverName) {
 - Better compatibility across Claude Code versions
 - Reduced coupling with internal APIs
 - Easier maintenance and updates
+
+**v2.1.0 Security & Performance Enhancements**:
+- **Command Security**: Input validation and allowlisting prevent injection attacks
+- **Performance Caching**: TTL-based cache eliminates redundant CLI executions
+- **Async Operations**: Non-blocking file I/O and parallel processing
+- **Error Handling**: Standardized patterns with enhanced logging
 
 ### 4. Output Formatting System
 
