@@ -5,6 +5,9 @@ import { StatusDisplay } from './display/status-display.js';
 import { ContextGenerator } from './generators/context-generator.js';
 import { ClaudeMCPManager } from './scanners/claude-mcp-manager.js';
 import { ClaudeToolDiscovery } from './scanners/claude-tool-discovery.js';
+import { readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 
 class CTDiscovery {
   constructor() {
@@ -13,6 +16,12 @@ class CTDiscovery {
     this.contextGenerator = new ContextGenerator();
     this.claudeMCPManager = new ClaudeMCPManager();
     this.toolDiscovery = new ClaudeToolDiscovery();
+    
+    // Get version from package.json
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+    const packageJson = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8'));
+    this.version = packageJson.version;
     
     // Color definitions for terminal output
     this.colors = {
@@ -28,6 +37,12 @@ class CTDiscovery {
   }
 
   async run(options = {}) {
+    // Handle version flag
+    if (options.version) {
+      console.log(`CTDiscovery v${this.version}`);
+      return;
+    }
+    
     // Handle Claude Tools CLI commands first
     if (options.toolsList) {
       return await this.handleToolsList(options);
@@ -49,7 +64,7 @@ class CTDiscovery {
       return await this.handleMcpInspect(options.mcpInspect, options);
     }
     
-    console.log('🔍 CTDiscovery - AI Development Environment Status\n');
+    console.log(`🔍 CTDiscovery v${this.version} - AI Development Environment Status\n`);
     
     try {
       const status = await this.scanner.scan();
@@ -242,7 +257,7 @@ class CTDiscovery {
 
   async handleMcpServers(options) {
     if (!options.quiet) {
-      console.log('🔍 CTDiscovery - MCP Servers (Claude Code Source of Truth)\n');
+      console.log(`🔍 CTDiscovery v${this.version} - MCP Servers (Claude Code Source of Truth)\n`);
     }
     
     try {
@@ -523,7 +538,7 @@ class CTDiscovery {
   
   async handleClaudeToolsList(options) {
     if (!options.quiet) {
-      console.log('🔧 Claude Tools Discovery - Individual MCP Tools\n');
+      console.log(`🔧 CTDiscovery v${this.version} - Individual MCP Tools\n`);
     }
 
     try {
@@ -794,6 +809,12 @@ function getArgValue(args, flag) {
 }
 
 // Handle special commands
+if (args.includes('--version') || args.includes('-v')) {
+  const ctd = new CTDiscovery();
+  console.log(`CTDiscovery v${ctd.version}`);
+  process.exit(0);
+}
+
 if (args.includes('help') || args.includes('--help') || args.includes('-h')) {
   console.log(`
 🔍 CTDiscovery - AI Development Environment Status
@@ -823,6 +844,7 @@ OPTIONS:
   --show-starter               # Display starter in console
   --all                        # Generate all context files
   --quiet                      # Suppress normal output
+  --version, -v                # Show version number
 
 EXAMPLES:
   npm start --generate-context              # Scan + create context file
