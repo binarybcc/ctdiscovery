@@ -1,9 +1,11 @@
 {
-  "name": "ctdiscovery",
+  "name": "ctdiscovery-claude-tools",
   "version": "2.1.0",
-  "description": "Non-destructive AI development environment scanner with real-time dashboard and Claude integration",
+  "description": "Enhanced AI development environment scanner with Claude Code MCP tool discovery and real-time dashboard",
   "main": "src/cli.js",
   "bin": {
+    "ctdiscovery-claude-tools": "src/cli.js",
+    "ctd-enhanced": "src/cli.js",
     "ctdiscovery": "src/cli.js",
     "ctd": "src/cli.js"
   },
@@ -39,7 +41,11 @@
     "mcp",
     "environment",
     "developer-tools",
-    "ai-assistant"
+    "ai-assistant",
+    "claude-tools",
+    "mcp-discovery",
+    "tool-inspection",
+    "enhanced"
   ],
   "author": {
     "name": "binarybcc",

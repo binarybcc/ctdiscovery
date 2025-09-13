@@ -1,8 +1,9 @@
 # Claude Tool Discovery - Installation Guide
 
-**Version**: v2.0.0  
+**Enhanced Version**: v2.1.0  
+**Package**: `ctdiscovery-claude-tools`  
 **Branch**: `feature/claude-tools-cli-simple`  
-**Last Updated**: 2025-09-12
+**Last Updated**: 2025-09-13 (NPM Package Published)
 
 ## Prerequisites
 
@@ -45,14 +46,38 @@ Claude Tool Discovery requires Claude Code CLI to be properly installed and conf
 
 ## Installation Methods
 
-### Method 1: Direct Repository Clone (Recommended)
+### Method 1: NPM Package (Recommended for Users)
 
-This method gives you the latest features and allows easy updates:
+The easiest way to install the enhanced version with all security and performance improvements:
+
+```bash
+# Global installation
+npm install -g ctdiscovery-claude-tools
+
+# Verify installation
+ctdiscovery-claude-tools --claude-tools-list --format table
+
+# Alternative commands available:
+ctd-enhanced --claude-tools-list
+ctdiscovery --claude-tools-list  # backward compatible
+ctd --claude-tools-list          # backward compatible
+```
+
+**Package Details:**
+- **Name**: `ctdiscovery-claude-tools`
+- **Version**: 2.1.0 (Enhanced with Claude Tools CLI)
+- **Security**: Command injection prevention, path validation
+- **Performance**: 60% faster scans, intelligent caching
+- **Features**: Individual MCP tool discovery, advanced filtering
+
+### Method 2: Development Repository Clone
+
+For developers who want to contribute or access the latest development features:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/ClaudeToolDiscovery.git
-cd ClaudeToolDiscovery
+git clone https://github.com/binarybcc/ctdiscovery.git
+cd ctdiscovery
 
 # Switch to the enhanced branch
 git checkout feature/claude-tools-cli-simple
