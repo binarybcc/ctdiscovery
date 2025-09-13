@@ -4,6 +4,7 @@ import { EnvironmentScanner } from './scanners/environment-scanner.js';
 import { StatusDisplay } from './display/status-display.js';
 import { ContextGenerator } from './generators/context-generator.js';
 import { ClaudeMCPManager } from './scanners/claude-mcp-manager.js';
+import { ClaudeToolDiscovery } from './scanners/claude-tool-discovery.js';
 
 class CTDiscovery {
   constructor() {
@@ -11,6 +12,7 @@ class CTDiscovery {
     this.display = new StatusDisplay();
     this.contextGenerator = new ContextGenerator();
     this.claudeMCPManager = new ClaudeMCPManager();
+    this.toolDiscovery = new ClaudeToolDiscovery();
     
     // Color definitions for terminal output
     this.colors = {
@@ -32,6 +34,13 @@ class CTDiscovery {
     }
     if (options.toolsInspect) {
       return await this.handleToolsInspect(options.toolsInspect, options);
+    }
+    // New enhanced tool discovery commands (matching Claude Code spec)
+    if (options.claudeToolsList) {
+      return await this.handleClaudeToolsList(options);
+    }
+    if (options.claudeToolsInspect) {
+      return await this.handleClaudeToolsInspect(options.claudeToolsInspect, options);
     }
     if (options.mcpServers) {
       return await this.handleMcpServers(options);
@@ -509,6 +518,264 @@ class CTDiscovery {
     
     console.log(`\nTotal: ${servers.length} servers`);
   }
+
+  // New enhanced tool discovery commands (matching Claude Code specification)
+  
+  async handleClaudeToolsList(options) {
+    if (!options.quiet) {
+      console.log('🔧 Claude Tools Discovery - Individual MCP Tools\n');
+    }
+
+    try {
+      // Use the new tool discovery scanner
+      const toolResults = await this.toolDiscovery.scan();
+      let tools = toolResults.data || [];
+
+      // Apply filters as per Claude Code spec
+      const filters = {
+        server: options.server,
+        search: options.search,
+        permissions: options.permissions,
+        status: options.status
+      };
+
+      if (Object.values(filters).some(f => f)) {
+        tools = this.toolDiscovery.filterTools(tools, filters);
+      }
+
+      // Output in requested format
+      if (options.format === 'json') {
+        const versionedOutput = {
+          version: 1,
+          tools: tools,
+          metadata: {
+            total: tools.length,
+            scanStatus: toolResults.status,
+            scanDuration: toolResults.method.duration,
+            sourceOfTruth: 'claude-tool-discovery',
+            filtersApplied: filters,
+            byServer: this._groupToolsByServer(tools)
+          }
+        };
+        console.log(JSON.stringify(versionedOutput, null, 2));
+      } else if (options.format === 'table') {
+        this.displayEnhancedToolsTable(tools);
+      } else if (options.format === 'csv') {
+        this.displayToolsCSV(tools);
+      } else {
+        this.displayEnhancedToolsList(tools);
+      }
+
+    } catch (error) {
+      console.error(`❌ Failed to discover Claude tools: ${error.message}`);
+      if (!options.quiet) {
+        console.log('\n💡 Make sure Claude Code is installed and MCP servers are configured.');
+      }
+    }
+  }
+
+  async handleClaudeToolsInspect(toolName, options) {
+    try {
+      // Get all tools and find the matching one
+      const toolResults = await this.toolDiscovery.scan();
+      const tools = toolResults.data || [];
+      
+      const tool = tools.find(t => 
+        t.name.toLowerCase().includes(toolName.toLowerCase()) ||
+        t.displayName?.toLowerCase().includes(toolName.toLowerCase())
+      );
+
+      if (!tool) {
+        console.log(`❌ Tool '${toolName}' not found in Claude tool discovery`);
+        console.log(`\nAvailable tools: ${tools.map(t => t.displayName || t.name).join(', ')}`);
+        return;
+      }
+
+      // Output in requested format
+      if (options.format === 'json') {
+        const versionedOutput = {
+          version: 1,
+          tool: tool,
+          inspectionMetadata: {
+            inspectedAt: new Date().toISOString(),
+            sourceOfTruth: 'claude-tool-discovery'
+          }
+        };
+        console.log(JSON.stringify(versionedOutput, null, 2));
+      } else if (options.format === 'markdown') {
+        this.displayToolInspectionMarkdown(tool);
+      } else if (options.brief) {
+        this.displayToolInspectionBrief(tool);
+      } else {
+        this.displayToolInspectionDetailed(tool);
+      }
+
+    } catch (error) {
+      console.error(`❌ Failed to inspect tool '${toolName}': ${error.message}`);
+    }
+  }
+
+  // Enhanced display methods for tool discovery
+
+  displayEnhancedToolsList(tools) {
+    const groupedTools = this._groupToolsByServer(tools);
+    
+    console.log(`MCP Tools Available (${tools.length} total)`);
+    console.log('='.repeat(50));
+    
+    Object.entries(groupedTools).forEach(([serverName, serverTools]) => {
+      console.log(`\n${serverName.toUpperCase()} Tools (${serverTools.length}):`);
+      console.log('-'.repeat(serverName.length + 8));
+      
+      serverTools.forEach(tool => {
+        const status = this.getStatusIcon(tool.status);
+        const description = tool.metadata?.description || 'No description available';
+        
+        console.log(`${status} ${tool.displayName || tool.name}`);
+        console.log(`   ${description}`);
+        if (tool.metadata?.parameters?.required?.length > 0) {
+          console.log(`   Required: ${tool.metadata.parameters.required.join(', ')}`);
+        }
+      });
+    });
+  }
+
+  displayEnhancedToolsTable(tools) {
+    console.log('Tool Name'.padEnd(25) + '| Server'.padEnd(15) + '| Status'.padEnd(12) + '| Description');
+    console.log('-'.repeat(80));
+    
+    tools.forEach(tool => {
+      const name = (tool.displayName || tool.name).substring(0, 24).padEnd(25);
+      const server = (tool.server || 'unknown').substring(0, 14).padEnd(15);
+      const status = `${this.getStatusIcon(tool.status)} ${tool.status}`.padEnd(12);
+      const description = (tool.metadata?.description || '').substring(0, 30);
+      
+      console.log(`${name}| ${server}| ${status}| ${description}`);
+    });
+    
+    console.log(`\nTotal: ${tools.length} tools`);
+  }
+
+  displayToolsCSV(tools) {
+    console.log('Tool Name,Server,Status,Description,Required Parameters,Permissions');
+    
+    tools.forEach(tool => {
+      const name = tool.displayName || tool.name;
+      const server = tool.server || '';
+      const status = tool.status || '';
+      const description = (tool.metadata?.description || '').replace(/,/g, ';');
+      const requiredParams = (tool.metadata?.parameters?.required || []).join(';');
+      const permissions = (tool.metadata?.permissions || []).join(';');
+      
+      console.log(`"${name}","${server}","${status}","${description}","${requiredParams}","${permissions}"`);
+    });
+  }
+
+  displayToolInspectionDetailed(tool) {
+    console.log(`Tool: ${tool.name}`);
+    console.log('='.repeat(tool.name.length + 6));
+    console.log();
+    
+    console.log(`Display Name: ${tool.displayName || tool.name}`);
+    console.log(`Server: ${tool.server || 'Unknown'}`);
+    console.log(`Status: ${this.getStatusIcon(tool.status)} ${tool.status}`);
+    console.log();
+    
+    console.log('Description:');
+    console.log(`  ${tool.metadata?.description || 'No description available'}`);
+    console.log();
+    
+    if (tool.metadata?.parameters) {
+      console.log('Parameters:');
+      console.log('-'.repeat(11));
+      
+      if (tool.metadata.parameters.required?.length > 0) {
+        console.log('Required:');
+        tool.metadata.parameters.required.forEach(param => {
+          console.log(`  • ${param}`);
+        });
+      }
+      
+      if (tool.metadata.parameters.optional?.length > 0) {
+        console.log('Optional:');
+        tool.metadata.parameters.optional.forEach(param => {
+          console.log(`  • ${param}`);
+        });
+      }
+      console.log();
+    }
+    
+    if (tool.metadata?.permissions?.length > 0) {
+      console.log('Permissions:');
+      console.log('-'.repeat(12));
+      tool.metadata.permissions.forEach(perm => {
+        console.log(`  • ${perm}`);
+      });
+      console.log();
+    }
+    
+    if (tool.metadata?.usageExamples?.length > 0) {
+      console.log('Usage Examples:');
+      console.log('-'.repeat(15));
+      tool.metadata.usageExamples.forEach((example, index) => {
+        console.log(`  ${index + 1}. ${example}`);
+      });
+    }
+  }
+
+  displayToolInspectionBrief(tool) {
+    const status = this.getStatusIcon(tool.status);
+    const description = tool.metadata?.description || 'No description';
+    const requiredParams = tool.metadata?.parameters?.required?.join(', ') || 'None';
+    
+    console.log(`${status} ${tool.displayName || tool.name} (${tool.server})`);
+    console.log(`   ${description}`);
+    console.log(`   Required: ${requiredParams}`);
+  }
+
+  displayToolInspectionMarkdown(tool) {
+    console.log(`# ${tool.displayName || tool.name}\n`);
+    console.log(`**Server:** ${tool.server || 'Unknown'}  `);
+    console.log(`**Status:** ${tool.status}  `);
+    console.log(`**Tool ID:** \`${tool.name}\`\n`);
+    
+    console.log('## Description\n');
+    console.log(`${tool.metadata?.description || 'No description available'}\n`);
+    
+    if (tool.metadata?.parameters) {
+      console.log('## Parameters\n');
+      
+      if (tool.metadata.parameters.required?.length > 0) {
+        console.log('### Required\n');
+        tool.metadata.parameters.required.forEach(param => {
+          console.log(`- \`${param}\``);
+        });
+        console.log();
+      }
+      
+      if (tool.metadata.parameters.optional?.length > 0) {
+        console.log('### Optional\n');
+        tool.metadata.parameters.optional.forEach(param => {
+          console.log(`- \`${param}\``);
+        });
+        console.log();
+      }
+    }
+  }
+
+  _groupToolsByServer(tools) {
+    const grouped = {};
+    
+    tools.forEach(tool => {
+      const server = tool.server || 'unknown';
+      if (!grouped[server]) {
+        grouped[server] = [];
+      }
+      grouped[server].push(tool);
+    });
+    
+    return grouped;
+  }
 }
 
 const args = process.argv.slice(2);
@@ -573,9 +840,21 @@ const claudeToolsOptions = {
   toolsInspect: getArgValue(args, '--tools-inspect'),
   mcpServers: args.includes('--mcp-servers'),
   mcpInspect: getArgValue(args, '--mcp-inspect'),
+  // New enhanced tool discovery commands (Claude Code spec)
+  claudeToolsList: args.includes('--claude-tools-list') || args.includes('tools') && args.includes('list'),
+  claudeToolsInspect: getArgValue(args, '--claude-tools-inspect') || (args.includes('tools') && args.includes('inspect') && args[args.indexOf('inspect') + 1]),
+  mcpServersList: args.includes('--mcp-servers-list') || (args.includes('mcp') && args.includes('servers') && args.includes('list')),
+  // Enhanced options
   format: getArgValue(args, '--format') || 'human',
   filter: getArgValue(args, '--filter'),
-  status: getArgValue(args, '--status')
+  status: getArgValue(args, '--status'),
+  server: getArgValue(args, '--server'),
+  search: getArgValue(args, '--search'),
+  permissions: getArgValue(args, '--permissions'),
+  verbose: args.includes('--verbose'),
+  brief: args.includes('--brief'),
+  watch: args.includes('--watch'),
+  alert: args.includes('--alert')
 };
 
 const options = {
