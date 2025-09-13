@@ -1,6 +1,12 @@
 import { execSync } from 'child_process';
 import { ToolScannerInterface, TOOL_STATUSES, TOOL_CATEGORIES, SCAN_STATUSES } from '../interfaces/tool-scanner-interface.js';
 
+// Configuration constants
+const DEFAULT_COMMAND_TIMEOUT = 5000; // 5 seconds
+const DEBUG_COMMAND_TIMEOUT = 8000; // 8 seconds for debug commands
+const CAPABILITY_COMMAND_TIMEOUT = 10000; // 10 seconds for capability discovery
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache timeout
+
 /**
  * Claude Code MCP Manager Scanner
  * Uses Claude Code's internal MCP manager as the source of truth
@@ -13,6 +19,10 @@ export class ClaudeMCPManager extends ToolScannerInterface {
     this.category = 'mcp-server';
     this.platform = process.platform;
     this.version = '1.0.0';
+    
+    // Performance: Command result cache with TTL
+    this._commandCache = new Map();
+    this._cacheTimeout = CACHE_TTL;
   }
 
   async validate() {
@@ -293,7 +303,7 @@ export class ClaudeMCPManager extends ToolScannerInterface {
       // Use debug mode to get capability information
       const output = await this._executeClaudeCommand(
         `--debug --print "List MCP capabilities" 2>&1 | grep -A 2 -B 2 "${serverName}"`,
-        { timeout: 10000 }
+        { timeout: CAPABILITY_COMMAND_TIMEOUT }
       );
 
       if (!output) return null;
@@ -342,9 +352,43 @@ export class ClaudeMCPManager extends ToolScannerInterface {
 
   /**
    * Execute a Claude Code command with error handling and timeout
+   * Security: Validates command input to prevent injection attacks
+   * Performance: Caches results to avoid redundant CLI calls
    */
   async _executeClaudeCommand(command, options = {}) {
-    const timeout = options.timeout || 5000;
+    const timeout = options.timeout || DEFAULT_COMMAND_TIMEOUT;
+    const skipCache = options.skipCache || false;
+    
+    // Security: Validate command input to prevent injection
+    if (typeof command !== 'string' || command.trim().length === 0) {
+      throw new Error('Invalid command: must be a non-empty string');
+    }
+    
+    // Performance: Check cache first (unless skipCache is true)
+    if (!skipCache) {
+      const cached = this._getFromCache(command);
+      if (cached !== null) {
+        return cached;
+      }
+    }
+    
+    // Security: Allowlist of safe Claude commands to prevent injection
+    const allowedCommands = [
+      'mcp list',
+      'mcp get',
+      '--version',
+      '--debug --print "help" 2>&1 | head -30',
+      '--debug --print "List MCP capabilities"'
+    ];
+    
+    const baseCommand = command.startsWith('claude') ? command.replace('claude ', '') : command;
+    const isAllowed = allowedCommands.some(allowed => 
+      baseCommand.startsWith(allowed) || baseCommand.startsWith(`"${allowed}"`)
+    );
+    
+    if (!isAllowed) {
+      throw new Error(`Disallowed command for security: ${command}`);
+    }
     
     try {
       const fullCommand = command.startsWith('claude') ? command : `claude ${command}`;
@@ -355,6 +399,9 @@ export class ClaudeMCPManager extends ToolScannerInterface {
         stdio: 'pipe'
       });
 
+      // Performance: Cache successful results
+      this._setInCache(command, output);
+      
       return output;
     } catch (error) {
       if (error.code === 'TIMEOUT') {
@@ -362,6 +409,31 @@ export class ClaudeMCPManager extends ToolScannerInterface {
       }
       throw new Error(`Command failed: ${error.message}`);
     }
+  }
+
+  /**
+   * Get result from cache if still valid
+   */
+  _getFromCache(command) {
+    const entry = this._commandCache.get(command);
+    if (!entry) return null;
+    
+    if (Date.now() - entry.timestamp > this._cacheTimeout) {
+      this._commandCache.delete(command);
+      return null;
+    }
+    
+    return entry.result;
+  }
+
+  /**
+   * Store result in cache with timestamp
+   */
+  _setInCache(command, result) {
+    this._commandCache.set(command, {
+      result,
+      timestamp: Date.now()
+    });
   }
 
   /**
