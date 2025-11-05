@@ -1,0 +1,216 @@
+{
+  "name": "ctdiscovery-vscode",
+  "displayName": "CTDiscovery",
+  "description": "Development environment intelligence directly in VSCode",
+  "version": "1.0.0",
+  "publisher": "ctdiscovery",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "environment",
+    "tools",
+    "discovery",
+    "ai",
+    "claude",
+    "mcp"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ctdiscovery.scan",
+        "title": "Scan Environment",
+        "category": "CTDiscovery"
+      },
+      {
+        "command": "ctdiscovery.refresh",
+        "title": "Refresh Environment Data",
+        "category": "CTDiscovery",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "ctdiscovery.generateContext",
+        "title": "Generate AI Context",
+        "category": "CTDiscovery"
+      },
+      {
+        "command": "ctdiscovery.syncTasks",
+        "title": "Sync Discovered Tools to Tasks",
+        "category": "CTDiscovery"
+      },
+      {
+        "command": "ctdiscovery.showRecommendations",
+        "title": "Show Extension Recommendations",
+        "category": "CTDiscovery"
+      },
+      {
+        "command": "ctdiscovery.openTool",
+        "title": "Open Tool Documentation",
+        "category": "CTDiscovery"
+      },
+      {
+        "command": "ctdiscovery.copyToolInfo",
+        "title": "Copy Tool Information",
+        "category": "CTDiscovery"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ctdiscovery",
+          "title": "CTDiscovery",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "ctdiscovery": [
+        {
+          "id": "ctdiscovery.environmentView",
+          "name": "Environment",
+          "contextualTitle": "Development Environment"
+        },
+        {
+          "id": "ctdiscovery.toolsView",
+          "name": "Discovered Tools",
+          "contextualTitle": "Discovered Tools"
+        },
+        {
+          "id": "ctdiscovery.overlapsView",
+          "name": "Overlaps & Issues",
+          "contextualTitle": "Tool Overlaps"
+        },
+        {
+          "id": "ctdiscovery.recommendationsView",
+          "name": "Recommendations",
+          "contextualTitle": "Recommendations"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "ctdiscovery.environmentView",
+        "contents": "No environment data yet.\n[Scan Environment](command:ctdiscovery.scan)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "ctdiscovery.refresh",
+          "when": "view == ctdiscovery.environmentView",
+          "group": "navigation"
+        },
+        {
+          "command": "ctdiscovery.generateContext",
+          "when": "view == ctdiscovery.environmentView",
+          "group": "1_actions"
+        },
+        {
+          "command": "ctdiscovery.syncTasks",
+          "when": "view == ctdiscovery.toolsView",
+          "group": "1_actions"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "ctdiscovery.openTool",
+          "when": "view == ctdiscovery.toolsView",
+          "group": "navigation"
+        },
+        {
+          "command": "ctdiscovery.copyToolInfo",
+          "when": "view == ctdiscovery.toolsView",
+          "group": "1_actions"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "ctdiscovery.scan"
+        },
+        {
+          "command": "ctdiscovery.refresh"
+        },
+        {
+          "command": "ctdiscovery.generateContext"
+        },
+        {
+          "command": "ctdiscovery.syncTasks"
+        },
+        {
+          "command": "ctdiscovery.showRecommendations"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CTDiscovery",
+      "properties": {
+        "ctdiscovery.autoScan": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically scan environment on workspace open"
+        },
+        "ctdiscovery.scanInterval": {
+          "type": "number",
+          "default": 0,
+          "description": "Auto-refresh interval in seconds (0 = disabled)"
+        },
+        "ctdiscovery.timeout": {
+          "type": "number",
+          "default": 5000,
+          "description": "Scan timeout in milliseconds"
+        },
+        "ctdiscovery.generateContextOnChange": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically update AI context when tools change"
+        },
+        "ctdiscovery.contextOutputPath": {
+          "type": "string",
+          "default": ".claude/context.md",
+          "description": "Output path for AI context file"
+        },
+        "ctdiscovery.showNotifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notifications for scan results"
+        },
+        "ctdiscovery.syncTasksAutomatically": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically sync discovered tools to tasks.json"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "node esbuild.js --production",
+    "lint": "eslint src --ext js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "esbuild": "^0.19.0",
+    "eslint": "^8.0.0"
+  },
+  "dependencies": {
+    "ctdiscovery": "file:../.."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ctdiscovery"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/ctdiscovery/issues"
+  },
+  "homepage": "https://github.com/yourusername/ctdiscovery#readme"
+}

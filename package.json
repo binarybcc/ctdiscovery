@@ -1,8 +1,32 @@
 {
   "name": "ctdiscovery",
-  "version": "1.2.0",
-  "description": "Non-destructive AI development environment scanner with real-time dashboard and Claude integration",
-  "main": "src/cli.js",
+  "version": "2.0.0",
+  "description": "Multi-layer development environment discovery system with programmatic API, CLI, and VSCode integration",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./api": {
+      "import": "./src/api/ctdiscovery-api.js"
+    },
+    "./scanners": {
+      "import": "./src/scanners/environment-scanner.js"
+    },
+    "./processors": {
+      "import": "./src/processors/index.js"
+    },
+    "./formatters": {
+      "import": "./src/formatters/index.js"
+    },
+    "./cli": {
+      "import": "./src/cli/cli.js"
+    },
+    "./constants": {
+      "import": "./src/constants.js"
+    }
+  },
   "bin": {
     "ctdiscovery": "src/cli.js",
     "ctd": "src/cli.js"
@@ -52,8 +76,12 @@
   "homepage": "https://github.com/binarybcc/ctdiscovery#readme",
   "files": [
     "src/",
+    "examples/",
+    "extensions/",
+    "docs/",
     "README.md",
     "LICENSE",
-    "OVERVIEW.md"
+    "OVERVIEW.md",
+    "ARCHITECTURE.md"
   ]
 }
