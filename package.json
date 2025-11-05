@@ -4,6 +4,7 @@
   "description": "Multi-layer development environment discovery system with programmatic API, CLI, and VSCode integration",
   "main": "src/index.js",
   "module": "src/index.js",
+  "types": "index.d.ts",
   "exports": {
     ".": {
       "import": "./src/index.js"

@@ -1,0 +1,760 @@
+{
+  "version": "2.0.0",
+  "timestamp": "2025-11-05T23:26:22.795Z",
+  "environment": {
+    "platform": "linux",
+    "nodeVersion": "v22.21.0",
+    "workingDirectory": "/home/user/ctdiscovery"
+  },
+  "scan": {
+    "duration": 8715,
+    "status": "success"
+  },
+  "tools": [
+    {
+      "name": "@anthropic-ai/claude-code",
+      "type": "mcp-server",
+      "source": "npm",
+      "version": "2.0.25",
+      "status": "available",
+      "category": "mcp-server",
+      "metadata": {
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "categories": [
+        "mcp-server"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 90
+    },
+    {
+      "name": "git",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "2.43.0",
+        "path": "/usr/bin/git",
+        "category": "version-control",
+        "description": "Distributed version control system",
+        "capabilities": [
+          "version-control",
+          "branching",
+          "merging",
+          "history"
+        ],
+        "documentation": "https://git-scm.com/doc",
+        "examples": [
+          "git status",
+          "git commit -m \"message\"",
+          "git push"
+        ]
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "node",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "22.21.0",
+        "path": "/opt/node22/bin/node",
+        "category": "language",
+        "description": "JavaScript runtime environment",
+        "capabilities": [
+          "javascript",
+          "runtime",
+          "async"
+        ],
+        "documentation": "https://nodejs.org/docs",
+        "examples": [
+          "node script.js",
+          "node --version"
+        ]
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "npm",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "10.9.4",
+        "path": "/opt/node22/bin/npm",
+        "category": "language, package-manager",
+        "description": "Node.js package manager",
+        "capabilities": [
+          "package-management",
+          "dependency-resolution",
+          "script-runner"
+        ],
+        "documentation": "https://docs.npmjs.com",
+        "examples": [
+          "npm install",
+          "npm run dev",
+          "npm test"
+        ]
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "python",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "3.11.14",
+        "path": "/usr/local/bin/python",
+        "category": "language",
+        "description": "Python programming language",
+        "capabilities": [
+          "scripting",
+          "ai-ml",
+          "data-science"
+        ],
+        "documentation": "https://docs.python.org",
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "python3",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "3.11.14",
+        "path": "/usr/local/bin/python3",
+        "category": "language",
+        "description": "python3 development tool",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "pip",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "pip 24.0 from /usr/lib/python3/dist-packages/pip (python 3.11)",
+        "path": "/usr/bin/pip",
+        "category": "language, package-manager",
+        "description": "Python package manager",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "ruby",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "3.3.6",
+        "path": "/usr/local/bin/ruby",
+        "category": "language",
+        "description": "ruby development tool",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "go",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "unknown",
+        "path": "/usr/local/go/bin/go",
+        "category": "language",
+        "description": "go development tool",
+        "capabilities": [
+          "compiled",
+          "concurrent",
+          "systems"
+        ],
+        "documentation": "https://go.dev/doc",
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "java",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "21.0.8",
+        "path": "/usr/bin/java",
+        "category": "language",
+        "description": "java development tool",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "make",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "GNU Make 4.3",
+        "path": "/usr/bin/make",
+        "category": "build-tool",
+        "description": "make development tool",
+        "capabilities": [
+          "build-automation",
+          "task-runner"
+        ],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "cmake",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "3.28.3",
+        "path": "/usr/bin/cmake",
+        "category": "build-tool",
+        "description": "cmake development tool",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "yarn",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "1.22.22",
+        "path": "/opt/node22/bin/yarn",
+        "category": "package-manager",
+        "description": "yarn development tool",
+        "capabilities": [
+          "package-management",
+          "dependency-resolution",
+          "workspace"
+        ],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "pnpm",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "10.19.0",
+        "path": "/opt/node22/bin/pnpm",
+        "category": "package-manager",
+        "description": "pnpm development tool",
+        "capabilities": [
+          "package-management",
+          "dependency-resolution",
+          "disk-efficient"
+        ],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "cargo",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "1.90.0",
+        "path": "/root/.cargo/bin/cargo",
+        "category": "package-manager",
+        "description": "cargo development tool",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "gem",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "3.5.22",
+        "path": "/usr/local/bin/gem",
+        "category": "package-manager",
+        "description": "gem development tool",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "claude",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "unknown",
+        "path": "/opt/node22/bin/claude",
+        "category": "ai-assistant",
+        "description": "claude development tool",
+        "capabilities": [
+          "ai-assistant",
+          "code-generation",
+          "analysis"
+        ],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 50
+    },
+    {
+      "name": "vim",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "9.1.0016",
+        "path": "/usr/bin/vim",
+        "category": "development",
+        "description": "vim development tool",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "curl",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "8.5.0",
+        "path": "/usr/bin/curl",
+        "category": "development",
+        "description": "HTTP client for API testing",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "wget",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "1.21.4",
+        "path": "/usr/bin/wget",
+        "category": "development",
+        "description": "wget development tool",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    },
+    {
+      "name": "jq",
+      "type": "system-tool",
+      "status": "available",
+      "source": "system-path",
+      "metadata": {
+        "version": "jq-1.7",
+        "path": "/usr/bin/jq",
+        "category": "development",
+        "description": "JSON processor for CLI",
+        "capabilities": [],
+        "documentation": null,
+        "examples": []
+      },
+      "validation": {
+        "functional": true,
+        "accessible": true,
+        "configured": true
+      },
+      "category": "system-tool",
+      "categories": [
+        "system-tool"
+      ],
+      "platformCompatibility": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "aiRelevance": 0
+    }
+  ],
+  "overlaps": [
+    {
+      "type": "command-conflict",
+      "tools": [
+        "python",
+        "python3"
+      ],
+      "reason": "Tools have overlapping functionality",
+      "severity": "info",
+      "recommendation": "Choose one of: , "
+    },
+    {
+      "type": "javascript-package-management",
+      "tools": [
+        "npm",
+        "yarn",
+        "pnpm"
+      ],
+      "reason": "Tools have overlapping functionality",
+      "severity": "info",
+      "recommendation": "Choose one of: , , "
+    }
+  ],
+  "validation": {
+    "valid": true,
+    "issues": 0,
+    "warnings": 0
+  },
+  "summary": {
+    "totalTools": 21,
+    "byStatus": {
+      "available": 21
+    },
+    "byCategory": {
+      "mcp-server": 1,
+      "system-tool": 20
+    },
+    "overlapCount": 2,
+    "validationIssues": 0
+  },
+  "metrics": {
+    "timestamp": "2025-11-05T23:26:14.080Z",
+    "totalDuration": 8714,
+    "completed": [
+      {
+        "name": "MCP Server Scanner",
+        "duration": 1877,
+        "toolCount": 1,
+        "status": "success"
+      },
+      {
+        "name": "VSCode Extension Scanner",
+        "duration": 1,
+        "toolCount": 0,
+        "status": "minimal"
+      },
+      {
+        "name": "System Tool Scanner",
+        "duration": 6835,
+        "toolCount": 20,
+        "status": "success"
+      }
+    ],
+    "failed": [],
+    "skipped": [],
+    "timeouts": [],
+    "errors": [],
+    "status": "success",
+    "performance": {
+      "totalDuration": 8715,
+      "averageScannerTime": 2178.25,
+      "timeoutBudgetUsed": 290.5,
+      "scannersCompleted": 2,
+      "toolsDetected": 21
+    }
+  }
+}

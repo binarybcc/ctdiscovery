@@ -5,7 +5,7 @@
  * Provides clean API for scanning, analyzing, and formatting environment data.
  */
 
-import EnvironmentScanner from '../scanners/environment-scanner.js';
+import { EnvironmentScanner } from '../scanners/environment-scanner.js';
 import { Deduplicator } from '../processors/deduplicator.js';
 import { OverlapDetector } from '../processors/overlap-detector.js';
 import { Enricher } from '../processors/enricher.js';
@@ -14,7 +14,7 @@ import { JSONFormatter } from '../formatters/json-formatter.js';
 import { MarkdownFormatter } from '../formatters/markdown-formatter.js';
 import { TextFormatter } from '../formatters/text-formatter.js';
 import { ContextGenerator } from '../formatters/context-generator.js';
-import ConfigManager from '../config/config-manager.js';
+import { ConfigManager } from '../config/config-manager.js';
 import { DEFAULTS, OUTPUT_FORMATS } from '../constants.js';
 
 /**
@@ -101,7 +101,13 @@ export default class CTDiscovery {
 
       // Add scan metadata
       results.apiVersion = '2.0.0';
-      results.scanDuration = Date.now() - startTime;
+      results.scanDuration = results.scanDuration || (Date.now() - startTime);
+
+      // Normalize structure: rename 'status' to 'tools' if needed
+      if (results.status && !results.tools) {
+        results.tools = results.status;
+        delete results.status;
+      }
 
       // Cache results
       if (scanOptions.enableCache) {

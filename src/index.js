@@ -21,13 +21,14 @@
  */
 
 // Core API
-export { default as CTDiscovery } from './api/ctdiscovery-api.js';
+import CTDiscoveryClass from './api/ctdiscovery-api.js';
+export { CTDiscoveryClass as CTDiscovery };
 
 // Individual scanners for advanced usage
-export { default as MCPScanner } from './scanners/mcp-scanner.js';
-export { default as VSCodeScanner } from './scanners/vscode-scanner.js';
-export { default as SystemToolScanner } from './scanners/system-tool-scanner.js';
-export { default as EnvironmentScanner } from './scanners/environment-scanner.js';
+export { MCPScanner } from './scanners/mcp-scanner.js';
+export { VSCodeScanner } from './scanners/vscode-scanner.js';
+export { SystemToolScanner } from './scanners/system-tool-scanner.js';
+export { EnvironmentScanner } from './scanners/environment-scanner.js';
 
 // Processing layer components
 export { Deduplicator } from './processors/deduplicator.js';
@@ -42,9 +43,9 @@ export { TextFormatter } from './formatters/text-formatter.js';
 export { ContextGenerator } from './formatters/context-generator.js';
 
 // Utilities
-export { default as ConfigManager } from './config/config-manager.js';
-export { default as ErrorHandler } from './utils/error-handler.js';
-export { default as PlatformDetection } from './utils/platform-detection.js';
+export { ConfigManager } from './config/config-manager.js';
+export { ErrorHandler } from './utils/error-handler.js';
+export { PlatformDetection } from './utils/platform-detection.js';
 
 // Constants
 export { TOOL_STATUSES, TOOL_CATEGORIES } from './constants.js';
@@ -67,7 +68,7 @@ export const NAME = packageJson.name;
  * @returns {Promise<Object>} Scan results
  */
 export async function quickScan(options = {}) {
-  const ctd = new CTDiscovery(options);
+  const ctd = new CTDiscoveryClass(options);
   const results = await ctd.scan();
   const analysis = await ctd.analyze(results);
   return analysis;
@@ -79,11 +80,11 @@ export async function quickScan(options = {}) {
  * @returns {Promise<string>} Context markdown
  */
 export async function generateContext(options = {}) {
-  const ctd = new CTDiscovery(options);
+  const ctd = new CTDiscoveryClass(options);
   const results = await ctd.scan();
   const analysis = await ctd.analyze(results);
   return await ctd.generateContext(analysis, options);
 }
 
 // Default export
-export default CTDiscovery;
+export default CTDiscoveryClass;

@@ -4,7 +4,7 @@
  * Detects conflicts and overlaps between tools
  */
 
-import DuplicationDetector from '../utils/duplication-detector.js';
+import { DuplicationDetector } from '../utils/duplication-detector.js';
 
 export class OverlapDetector {
   constructor(options = {}) {
@@ -25,20 +25,24 @@ export class OverlapDetector {
 
     const overlaps = [];
 
-    // Use existing duplication detector
-    const duplicates = this.duplicationDetector.detectDuplicates(tools);
-
-    // Convert to overlap format
-    for (const [key, dupes] of Object.entries(duplicates)) {
-      if (dupes.length > 1) {
-        overlaps.push({
-          type: 'duplicate-functionality',
-          tools: dupes.map(d => d.name),
-          reason: `Multiple tools provide similar functionality: ${key}`,
-          severity: 'info',
-          recommendation: this._getRecommendation(dupes)
-        });
+    // Use existing duplication detector for system tools
+    try {
+      const systemToolOverlaps = this.duplicationDetector.detectSystemToolOverlaps(tools);
+      if (systemToolOverlaps && systemToolOverlaps.length > 0) {
+        // Convert to our overlap format
+        for (const overlap of systemToolOverlaps) {
+          overlaps.push({
+            type: overlap.category || 'tool-overlap',
+            tools: overlap.tools || [],
+            reason: overlap.reason || 'Tools have overlapping functionality',
+            severity: overlap.severity || 'info',
+            recommendation: overlap.recommendation || this._getRecommendation(overlap.tools)
+          });
+        }
       }
+    } catch (error) {
+      // If duplication detector fails, continue with other detection
+      console.warn('Duplication detector failed:', error.message);
     }
 
     // Detect category-specific overlaps
