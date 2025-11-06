@@ -193,7 +193,33 @@ export class RelevanceScorer {
   _scoreActive(tool) {
     const reasons = [];
 
-    // Check status
+    // PRIORITY 1: Check usage pattern from UsageAnalyzer
+    if (tool.usage) {
+      const pattern = tool.usage.pattern;
+      const confidence = tool.usage.confidence || 0;
+
+      if (pattern === 'active-development') {
+        reasons.push('Active in project scripts');
+        return { score: 20, reasons };
+      }
+
+      if (pattern === 'configured') {
+        reasons.push('Configured in project');
+        return { score: 15, reasons };
+      }
+
+      if (pattern === 'installed') {
+        reasons.push('Installed but minimal use');
+        return { score: 8, reasons };
+      }
+
+      if (pattern === 'dormant') {
+        reasons.push('Dormant - not actively used');
+        return { score: 3, reasons };
+      }
+    }
+
+    // FALLBACK: Check status
     if (tool.status === 'active') {
       reasons.push('Currently active');
       return { score: 20, reasons };
