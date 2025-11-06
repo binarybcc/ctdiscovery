@@ -38,7 +38,24 @@ export class UsageAnalyzer {
    * Analyze usage pattern for a single tool (public API)
    */
   analyzeToolUsage(tool) {
-    return this._analyzeToolUsage(tool);
+    const result = this._analyzeToolUsage(tool);
+
+    // Debug logging
+    if (process.env.DEBUG_USAGE && ['phpstan', 'psalm', 'rector', 'phpunit', 'composer', 'php'].includes(tool.name)) {
+      console.log(`[USAGE] ${tool.name}:`);
+      console.log(`  Pattern: ${result.pattern}`);
+      console.log(`  Confidence: ${result.confidence}`);
+      console.log(`  Indicators: ${result.indicators.length}`);
+      if (result.indicators.length > 0) {
+        result.indicators.forEach(ind => {
+          if (ind.scripts) {
+            console.log(`  Scripts: ${ind.scripts.join(', ')}`);
+          }
+        });
+      }
+    }
+
+    return result;
   }
 
   /**

@@ -70,6 +70,18 @@ export class RelevanceScorer {
     // Calculate total
     const totalScore = Object.values(scores).reduce((sum, s) => sum + s, 0);
 
+    // Debug logging for PHP tools
+    if (process.env.DEBUG_RELEVANCE && ['phpstan', 'psalm', 'rector', 'phpunit', 'composer', 'php'].includes(tool.name)) {
+      console.log(`[RELEVANCE] ${tool.name}:`);
+      console.log(`  Ecosystem: ${scores.ecosystem}`);
+      console.log(`  Configured: ${scores.configured}`);
+      console.log(`  Active: ${scores.active}`);
+      console.log(`  Capability: ${scores.capability}`);
+      console.log(`  Standard: ${scores.standard}`);
+      console.log(`  Total: ${totalScore}`);
+      console.log(`  Usage pattern: ${tool.usage?.pattern || 'none'}`);
+    }
+
     // Determine level
     let level, category;
     if (totalScore >= 80) {
