@@ -80,13 +80,29 @@ export class SystemToolScanner extends ToolScannerInterface {
 
     // Scan each tool category
     for (const [category, tools] of Object.entries(this.toolCategories)) {
+      if (process.env.DEBUG_SCANNER) {
+        console.log(`[SCANNER] Scanning category: ${category}, tools:`, tools);
+      }
       for (const tool of tools) {
         try {
+          if (process.env.DEBUG_SCANNER) {
+            console.log(`[SCANNER] Detecting tool: ${tool} in category: ${category}`);
+          }
           const detection = await this.detectTool(tool, category);
           if (detection) {
+            if (process.env.DEBUG_SCANNER) {
+              console.log(`[SCANNER] ✅ Detected: ${tool} - status: ${detection.status}`);
+            }
             results.data.push(detection);
+          } else {
+            if (process.env.DEBUG_SCANNER) {
+              console.log(`[SCANNER] ❌ Not found: ${tool}`);
+            }
           }
         } catch (error) {
+          if (process.env.DEBUG_SCANNER) {
+            console.log(`[SCANNER] ⚠️  Error detecting ${tool}: ${error.message}`);
+          }
           results.warnings.push(`Failed to detect ${tool}: ${error.message}`);
         }
       }

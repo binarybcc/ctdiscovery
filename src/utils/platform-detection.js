@@ -106,6 +106,10 @@ export class PlatformDetection {
   }
 
   async testCommandAvailability(command) {
+    if (process.env.DEBUG_SCANNER) {
+      console.log(`[PLATFORM] Testing availability: ${command}`);
+    }
+
     try {
       // First try global PATH (which/where)
       const testCmd = this.platform === 'win32'
@@ -118,6 +122,10 @@ export class PlatformDetection {
         timeout: 5000
       });
 
+      if (process.env.DEBUG_SCANNER) {
+        console.log(`[PLATFORM] ✅ Found in global PATH: ${result.trim()}`);
+      }
+
       return {
         available: true,
         path: result.trim(),
@@ -125,6 +133,9 @@ export class PlatformDetection {
         location: 'global'
       };
     } catch (error) {
+      if (process.env.DEBUG_SCANNER) {
+        console.log(`[PLATFORM] Not in global PATH, checking project-local...`);
+      }
       // If not found in PATH, check project-local directories
       return this._checkProjectLocalTool(command);
     }
@@ -137,6 +148,11 @@ export class PlatformDetection {
   _checkProjectLocalTool(command) {
     const cwd = process.cwd();
 
+    if (process.env.DEBUG_SCANNER) {
+      console.log(`[PLATFORM] Checking project-local for: ${command}`);
+      console.log(`[PLATFORM] CWD: ${cwd}`);
+    }
+
     // Common project-local tool directories
     const localPaths = [
       path.join(cwd, 'vendor', 'bin', command),      // PHP Composer
@@ -147,7 +163,13 @@ export class PlatformDetection {
     ];
 
     for (const toolPath of localPaths) {
+      if (process.env.DEBUG_SCANNER) {
+        console.log(`[PLATFORM] Checking path: ${toolPath}`);
+      }
       if (existsSync(toolPath)) {
+        if (process.env.DEBUG_SCANNER) {
+          console.log(`[PLATFORM] ✅ FOUND at: ${toolPath}`);
+        }
         return {
           available: true,
           path: toolPath,
@@ -155,6 +177,10 @@ export class PlatformDetection {
           location: 'project-local'
         };
       }
+    }
+
+    if (process.env.DEBUG_SCANNER) {
+      console.log(`[PLATFORM] ❌ NOT FOUND: ${command}`);
     }
 
     return {
