@@ -4,12 +4,19 @@
  * Enriches tool entries with additional metadata, capabilities, and context
  */
 
+import { UsageAnalyzer } from '../intelligence/usage-analyzer.js';
+
 export class Enricher {
   constructor(options = {}) {
     this.options = options;
 
     // Tool capability database
     this.capabilities = this._buildCapabilityDatabase();
+
+    // Usage analyzer for detecting tool activity
+    this.usageAnalyzer = new UsageAnalyzer({
+      projectRoot: options.projectRoot || process.cwd()
+    });
   }
 
   /**
@@ -24,7 +31,16 @@ export class Enricher {
       return [];
     }
 
-    return tools.map(tool => this._enrichTool(tool, environment));
+    // Add usage patterns to all tools first
+    const toolsWithUsage = await Promise.all(
+      tools.map(async tool => {
+        const usage = await this.usageAnalyzer.analyzeToolUsage(tool);
+        return { ...tool, usage };
+      })
+    );
+
+    // Then enrich with additional metadata
+    return toolsWithUsage.map(tool => this._enrichTool(tool, environment));
   }
 
   /**
