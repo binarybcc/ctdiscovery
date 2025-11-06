@@ -101,11 +101,12 @@ export class UsageAnalyzer {
     }
 
     // Determine usage pattern
-    if (confidence >= 70) {
+    // Lowered threshold: if tool is in scripts (45 pts), that's active use!
+    if (confidence >= 45) {
       pattern = 'active-development';
-    } else if (confidence >= 50) {
-      pattern = 'configured';
     } else if (confidence >= 30) {
+      pattern = 'configured';
+    } else if (confidence >= 15) {
       pattern = 'installed';
     } else if (tool.status === 'available') {
       pattern = 'dormant';
