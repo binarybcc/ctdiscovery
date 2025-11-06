@@ -5,7 +5,7 @@
  * "installed" and "actually used".
  */
 
-import { existsSync, statSync, readdirSync } from 'fs';
+import { existsSync, statSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
 
@@ -193,7 +193,8 @@ export class UsageAnalyzer {
     const packageJsonPath = join(this.projectRoot, 'package.json');
     if (existsSync(packageJsonPath)) {
       try {
-        const pkg = require(packageJsonPath);
+        const pkgContent = readFileSync(packageJsonPath, 'utf-8');
+        const pkg = JSON.parse(pkgContent);
         if (pkg.scripts) {
           const scriptsUsingTool = Object.entries(pkg.scripts)
             .filter(([_, cmd]) => cmd.toLowerCase().includes(toolName))
@@ -212,7 +213,7 @@ export class UsageAnalyzer {
           }
         }
       } catch (error) {
-        // Ignore
+        // Ignore parse errors
       }
     }
 
@@ -220,7 +221,8 @@ export class UsageAnalyzer {
     const composerPath = join(this.projectRoot, 'composer.json');
     if (existsSync(composerPath)) {
       try {
-        const composer = require(composerPath);
+        const composerContent = readFileSync(composerPath, 'utf-8');
+        const composer = JSON.parse(composerContent);
         if (composer.scripts) {
           const scriptsUsingTool = Object.entries(composer.scripts)
             .filter(([_, cmd]) => {
@@ -242,7 +244,7 @@ export class UsageAnalyzer {
           }
         }
       } catch (error) {
-        // Ignore
+        // Ignore parse errors
       }
     }
 
