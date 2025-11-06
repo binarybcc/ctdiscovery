@@ -7,6 +7,14 @@
  */
 
 import CTDiscovery from '../api/ctdiscovery-api.js';
+import { readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'), 'utf-8'));
+const VERSION = packageJson.version;
 
 class CTDiscoveryCLI {
   constructor() {
@@ -31,7 +39,7 @@ class CTDiscoveryCLI {
 
       // Scan environment
       if (!options.quiet) {
-        console.log('🔍 CTDiscovery - Multi-layer Environment Discovery\n');
+        console.log(`🔍 CTDiscovery ${this.colors.gray}v${VERSION}${this.colors.reset} - Multi-layer Environment Discovery\n`);
       }
 
       const scanResults = await ctd.scan();
@@ -174,9 +182,13 @@ class CTDiscoveryCLI {
     console.log('');
   }
 
+  showVersion() {
+    console.log(`${this.colors.cyan}CTDiscovery${this.colors.reset} version ${this.colors.bright}${VERSION}${this.colors.reset}`);
+  }
+
   showHelp() {
     console.log(`
-${this.colors.bright}🔍 CTDiscovery - Multi-layer Environment Discovery${this.colors.reset}
+${this.colors.bright}🔍 CTDiscovery v${VERSION} - Multi-layer Environment Discovery${this.colors.reset}
 
 ${this.colors.bright}USAGE:${this.colors.reset}
   ctdiscovery [options]
@@ -197,6 +209,7 @@ ${this.colors.bright}OPTIONS:${this.colors.reset}
   --verbose                ${this.colors.gray}Show detailed information${this.colors.reset}
   --quiet                  ${this.colors.gray}Minimal output${this.colors.reset}
   --timeout <ms>           ${this.colors.gray}Scan timeout (default: 10000)${this.colors.reset}
+  --version, -v            ${this.colors.gray}Show version number${this.colors.reset}
   --help, -h               ${this.colors.gray}Show this help${this.colors.reset}
 
 ${this.colors.bright}EXAMPLES:${this.colors.reset}
@@ -223,6 +236,14 @@ For more information: ${this.colors.cyan}https://github.com/binarybcc/ctdiscover
 // Parse arguments
 const args = process.argv.slice(2);
 
+// Handle --version flag
+if (args.includes('--version') || args.includes('-v')) {
+  const cli = new CTDiscoveryCLI();
+  cli.showVersion();
+  process.exit(0);
+}
+
+// Handle --help flag
 if (args.includes('--help') || args.includes('-h') || args.includes('help')) {
   const cli = new CTDiscoveryCLI();
   cli.showHelp();
