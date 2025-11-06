@@ -1,5 +1,6 @@
 import os from 'os';
 import path from 'path';
+import { existsSync } from 'fs';
 import { execSync } from 'child_process';
 
 export class PlatformDetection {
@@ -106,28 +107,61 @@ export class PlatformDetection {
 
   async testCommandAvailability(command) {
     try {
-      const testCmd = this.platform === 'win32' 
-        ? `where ${command}` 
+      // First try global PATH (which/where)
+      const testCmd = this.platform === 'win32'
+        ? `where ${command}`
         : `which ${command}`;
-      
-      const result = execSync(testCmd, { 
-        encoding: 'utf8', 
+
+      const result = execSync(testCmd, {
+        encoding: 'utf8',
         stdio: 'pipe',
-        timeout: 5000 
+        timeout: 5000
       });
-      
+
       return {
         available: true,
         path: result.trim(),
-        command: command
+        command: command,
+        location: 'global'
       };
     } catch (error) {
-      return {
-        available: false,
-        command: command,
-        error: error.message
-      };
+      // If not found in PATH, check project-local directories
+      return this._checkProjectLocalTool(command);
     }
+  }
+
+  /**
+   * Check for project-local tools in common locations
+   * @private
+   */
+  _checkProjectLocalTool(command) {
+    const cwd = process.cwd();
+
+    // Common project-local tool directories
+    const localPaths = [
+      path.join(cwd, 'vendor', 'bin', command),      // PHP Composer
+      path.join(cwd, 'node_modules', '.bin', command), // npm/yarn/pnpm
+      path.join(cwd, '.venv', 'bin', command),         // Python venv
+      path.join(cwd, 'venv', 'bin', command),          // Python venv (alternative)
+      path.join(cwd, 'bin', command),                  // Project bin directory
+    ];
+
+    for (const toolPath of localPaths) {
+      if (existsSync(toolPath)) {
+        return {
+          available: true,
+          path: toolPath,
+          command: command,
+          location: 'project-local'
+        };
+      }
+    }
+
+    return {
+      available: false,
+      command: command,
+      error: 'Command not found in PATH or project-local directories'
+    };
   }
 
   getPlatformInfo() {
