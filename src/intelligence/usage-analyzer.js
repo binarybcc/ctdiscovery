@@ -35,7 +35,15 @@ export class UsageAnalyzer {
   }
 
   /**
-   * Analyze individual tool usage
+   * Analyze usage pattern for a single tool (public API)
+   */
+  analyzeToolUsage(tool) {
+    return this._analyzeToolUsage(tool);
+  }
+
+  /**
+   * Analyze individual tool usage (internal implementation)
+   * @private
    */
   _analyzeToolUsage(tool) {
     const indicators = [];
