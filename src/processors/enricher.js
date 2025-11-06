@@ -113,6 +113,9 @@ export class Enricher {
       npm: ['package-management', 'dependency-resolution', 'script-runner'],
       yarn: ['package-management', 'dependency-resolution', 'workspace'],
       pnpm: ['package-management', 'dependency-resolution', 'disk-efficient'],
+      composer: ['package-management', 'dependency-resolution', 'php'],
+      pip: ['package-management', 'python'],
+      cargo: ['package-management', 'rust'],
 
       // Build Tools
       docker: ['containerization', 'isolation', 'deployment'],
@@ -125,6 +128,27 @@ export class Enricher {
       python: ['scripting', 'ai-ml', 'data-science'],
       go: ['compiled', 'concurrent', 'systems'],
       rust: ['systems', 'memory-safe', 'performance'],
+      php: ['scripting', 'web-development', 'backend'],
+
+      // PHP Tools
+      phpstan: ['static-analysis', 'code-quality', 'type-checking'],
+      psalm: ['static-analysis', 'code-quality', 'type-checking'],
+      phpcs: ['code-quality', 'linting', 'code-style'],
+      'php-cs-fixer': ['code-quality', 'formatting', 'code-style'],
+      rector: ['refactoring', 'code-quality', 'modernization'],
+      phpunit: ['testing', 'unit-testing', 'php'],
+
+      // JavaScript Tools
+      eslint: ['linting', 'code-quality', 'javascript'],
+      prettier: ['formatting', 'code-style'],
+      tsc: ['type-checking', 'typescript', 'compilation'],
+
+      // Python Tools
+      pytest: ['testing', 'unit-testing', 'python'],
+      black: ['formatting', 'code-style', 'python'],
+      mypy: ['type-checking', 'static-analysis', 'python'],
+      pylint: ['linting', 'code-quality', 'python'],
+      flake8: ['linting', 'code-quality', 'python'],
 
       // AI Assistants
       claude: ['ai-assistant', 'code-generation', 'analysis'],
