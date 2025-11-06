@@ -26,6 +26,9 @@ export class JSONFormatter {
   async format(analysisResult, options = {}) {
     const opts = { ...this.options, ...options };
 
+    // Check if this is an intelligent analysis result
+    const isIntelligent = analysisResult.projectIntelligence !== undefined;
+
     // Build output object
     const output = {
       version: analysisResult.version || '2.0.0',
@@ -37,11 +40,79 @@ export class JSONFormatter {
       }
     };
 
-    // Add tools
-    if (analysisResult.tools) {
-      output.tools = opts.includeMetadata !== false
-        ? analysisResult.tools
-        : analysisResult.tools.map(t => this._stripMetadata(t));
+    // Add intelligence-specific fields if present
+    if (isIntelligent) {
+      output.intelligence = {
+        mode: opts.mode || 'smart',
+        projectType: analysisResult.projectIntelligence
+      };
+
+      // Add tools organized by relevance
+      if (analysisResult.toolsByRelevance) {
+        output.tools = opts.includeMetadata !== false
+          ? analysisResult.tools
+          : analysisResult.tools.map(t => this._stripMetadata(t));
+
+        output.intelligence.toolsByRelevance = {
+          active: analysisResult.toolsByRelevance.active.length,
+          available: analysisResult.toolsByRelevance.available.length,
+          filtered: analysisResult.toolsByRelevance.filtered.length
+        };
+
+        // Optionally include detailed relevance breakdown
+        if (opts.includeRelevanceDetails) {
+          output.intelligence.relevanceDetails = {
+            active: analysisResult.toolsByRelevance.active.map(t => ({
+              name: t.name,
+              relevance: t.relevance.level,
+              score: t.relevance.score,
+              reasons: t.relevance.reasons
+            })),
+            available: analysisResult.toolsByRelevance.available.map(t => ({
+              name: t.name,
+              usage: t.usage?.pattern,
+              score: t.relevance.score
+            }))
+          };
+        }
+      }
+
+      // Add summary with maturity
+      if (analysisResult.summary) {
+        output.intelligence.summary = analysisResult.summary;
+      }
+
+      // Add recommendations
+      if (analysisResult.recommendations && analysisResult.recommendations.length > 0) {
+        output.intelligence.recommendations = analysisResult.recommendations;
+      }
+
+      // Add optimization opportunities
+      if (analysisResult.optimizationOpportunities && analysisResult.optimizationOpportunities.length > 0) {
+        output.intelligence.optimizations = analysisResult.optimizationOpportunities;
+      }
+
+      // Add AI context
+      if (analysisResult.aiContext && opts.includeAIContext !== false) {
+        output.intelligence.aiContext = {
+          conversationStarter: analysisResult.aiContext.conversationStarter,
+          keyTools: analysisResult.aiContext.keyTools?.map(t => t.name) || [],
+          focusAreas: analysisResult.aiContext.focusAreas || []
+        };
+      }
+    } else {
+      // Standard analysis result
+      // Add tools
+      if (analysisResult.tools) {
+        output.tools = opts.includeMetadata !== false
+          ? analysisResult.tools
+          : analysisResult.tools.map(t => this._stripMetadata(t));
+      }
+
+      // Add summary
+      if (analysisResult.summary) {
+        output.summary = analysisResult.summary;
+      }
     }
 
     // Add overlaps if present
@@ -60,11 +131,6 @@ export class JSONFormatter {
       if (analysisResult.validation.issues?.length > 0) {
         output.validation.issueDetails = analysisResult.validation.issues;
       }
-    }
-
-    // Add summary
-    if (analysisResult.summary) {
-      output.summary = analysisResult.summary;
     }
 
     // Add metrics if present

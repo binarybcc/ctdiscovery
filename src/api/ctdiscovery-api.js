@@ -15,6 +15,7 @@ import { MarkdownFormatter } from '../formatters/markdown-formatter.js';
 import { TextFormatter } from '../formatters/text-formatter.js';
 import { ContextGenerator } from '../formatters/context-generator.js';
 import { ConfigManager } from '../config/config-manager.js';
+import { IntelligenceAnalyzer } from '../intelligence/intelligence-analyzer.js';
 import { DEFAULTS, OUTPUT_FORMATS } from '../constants.js';
 
 /**
@@ -40,6 +41,7 @@ export default class CTDiscovery {
    * @param {boolean} [options.verbose=false] - Enable verbose output
    * @param {boolean} [options.enableCache=true] - Enable result caching
    * @param {number} [options.cacheTTL=60000] - Cache TTL in ms
+   * @param {string} [options.intelligenceMode='smart'] - Intelligence mode: 'all', 'smart', 'project-optimized', 'ai-context'
    * @param {Object} [options.config] - Custom configuration object
    */
   constructor(options = {}) {
@@ -51,6 +53,7 @@ export default class CTDiscovery {
       verbose: options.verbose ?? DEFAULTS.VERBOSE,
       enableCache: options.enableCache ?? DEFAULTS.ENABLE_CACHE,
       cacheTTL: options.cacheTTL ?? DEFAULTS.CACHE_TTL,
+      intelligenceMode: options.intelligenceMode ?? 'smart',
       ...options
     };
 
@@ -61,6 +64,10 @@ export default class CTDiscovery {
     this.overlapDetector = new OverlapDetector();
     this.enricher = new Enricher();
     this.validator = new Validator();
+    this.intelligenceAnalyzer = new IntelligenceAnalyzer({
+      projectRoot: process.cwd(),
+      intelligenceMode: this.options.intelligenceMode
+    });
 
     // Initialize formatters
     this.formatters = {
@@ -176,6 +183,86 @@ export default class CTDiscovery {
       return analysis;
     } catch (error) {
       throw new Error(`Analysis failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Perform intelligent analysis with context-aware filtering
+   *
+   * Adds project intelligence, relevance scoring, and smart filtering
+   * to provide curated, actionable insights rather than overwhelming data.
+   *
+   * @param {AnalysisResult} analysisResult - Analysis result from analyze()
+   * @param {Object} [options] - Intelligence options
+   * @param {string} [options.mode] - Intelligence mode: 'smart', 'all', 'project-optimized', 'ai-context'
+   * @returns {Promise<IntelligenceResult>} Intelligent analysis with smart filtering
+   *
+   * @example
+   * ```javascript
+   * const scanResults = await ctd.scan();
+   * const analysis = await ctd.analyze(scanResults);
+   * const intelligence = await ctd.intelligentAnalyze(analysis);
+   * console.log(intelligence.aiContext.conversationStarter);
+   * ```
+   */
+  async intelligentAnalyze(analysisResult, options = {}) {
+    if (!analysisResult || !analysisResult.tools) {
+      throw new Error('Invalid analysis result provided to intelligentAnalyze()');
+    }
+
+    const intelligenceOptions = {
+      mode: options.mode || this.options.intelligenceMode,
+      ...options
+    };
+
+    try {
+      // Perform intelligent analysis
+      const intelligence = await this.intelligenceAnalyzer.analyze(
+        analysisResult.tools,
+        analysisResult
+      );
+
+      // Build enhanced result
+      const result = {
+        version: '2.0.0',
+        timestamp: analysisResult.timestamp,
+        environment: analysisResult.environment,
+        scanDuration: analysisResult.scanDuration,
+
+        // Project intelligence
+        projectIntelligence: intelligence.projectIntelligence,
+
+        // Smart-filtered tools
+        tools: this.intelligenceAnalyzer.filterByMode(intelligence, intelligenceOptions.mode),
+
+        // All tools categorized by relevance
+        toolsByRelevance: {
+          active: intelligence.tools.active,
+          available: intelligence.tools.available,
+          filtered: intelligence.tools.noise
+        },
+
+        // Smart summary
+        summary: intelligence.summary,
+
+        // Recommendations
+        recommendations: intelligence.recommendations,
+
+        // Optimization opportunities
+        optimizationOpportunities: intelligence.optimizationOpportunities,
+
+        // AI-optimized context
+        aiContext: intelligence.aiContext,
+
+        // Original data (for compatibility)
+        overlaps: analysisResult.overlaps,
+        validation: analysisResult.validation,
+        metrics: analysisResult.metrics
+      };
+
+      return result;
+    } catch (error) {
+      throw new Error(`Intelligent analysis failed: ${error.message}`);
     }
   }
 

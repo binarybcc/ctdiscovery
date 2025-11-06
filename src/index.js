@@ -42,6 +42,12 @@ export { MarkdownFormatter } from './formatters/markdown-formatter.js';
 export { TextFormatter } from './formatters/text-formatter.js';
 export { ContextGenerator } from './formatters/context-generator.js';
 
+// Intelligence layer
+export { IntelligenceAnalyzer } from './intelligence/intelligence-analyzer.js';
+export { ProjectTypeDetector } from './intelligence/project-type-detector.js';
+export { RelevanceScorer } from './intelligence/relevance-scorer.js';
+export { UsageAnalyzer } from './intelligence/usage-analyzer.js';
+
 // Utilities
 export { ConfigManager } from './config/config-manager.js';
 export { ErrorHandler } from './utils/error-handler.js';

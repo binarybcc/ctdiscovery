@@ -145,6 +145,101 @@ declare module 'ctdiscovery' {
     };
   }
 
+  // ============================================================================
+  // Intelligence Layer Types
+  // ============================================================================
+
+  export interface ProjectIntelligence {
+    type: string;
+    languages: string[];
+    frameworks: string[];
+    packageManagers: string[];
+    buildSystems: string[];
+    capabilities: string[];
+    confidence: number;
+  }
+
+  export interface UsagePattern {
+    pattern: 'active-development' | 'configured' | 'installed' | 'dormant' | 'unknown';
+    indicators: string[];
+    lastActivity?: string;
+    frequency?: 'daily' | 'weekly' | 'monthly' | 'rare' | 'unknown';
+    confidence: number;
+    configurationMaturity?: 'mature' | 'configured' | 'basic' | 'installed-only' | 'unknown';
+    active: boolean;
+  }
+
+  export interface ToolRelevance {
+    score: number;
+    level: 'critical' | 'high' | 'medium' | 'low' | 'irrelevant';
+    category: 'essential' | 'recommended' | 'optional' | 'noise';
+    reasons: string[];
+    breakdown: {
+      ecosystem: number;
+      configured: number;
+      active: number;
+      capability: number;
+      standard: number;
+    };
+  }
+
+  export interface ToolWithIntelligence extends Tool {
+    usage?: UsagePattern;
+    relevance: ToolRelevance;
+  }
+
+  export interface IntelligentSummary {
+    description: string;
+    maturity: 'mature' | 'configured' | 'basic' | 'minimal';
+    maturityScore: number;
+    capabilities: string[];
+    keyTools: string[];
+    total: number;
+    active: number;
+    available: number;
+    filtered: number;
+  }
+
+  export interface Recommendation {
+    type: 'install' | 'configure' | 'remove' | 'upgrade' | 'optimize';
+    priority: 'high' | 'medium' | 'low';
+    action: string;
+    reason: string;
+    tools?: string[];
+  }
+
+  export interface OptimizationOpportunity {
+    type: 'redundancy' | 'upgrade' | 'configuration' | 'removal';
+    impact: 'high' | 'medium' | 'low';
+    suggestion: string;
+    affected: string[];
+  }
+
+  export interface AIContext {
+    conversationStarter: string;
+    keyTools: Array<{
+      name: string;
+      purpose: string;
+      relevance: number;
+    }>;
+    focusAreas: string[];
+    environmentProfile: string;
+  }
+
+  export interface IntelligentAnalysisResult extends AnalysisResult {
+    projectIntelligence: ProjectIntelligence;
+    tools: ToolWithIntelligence[];
+    toolsByRelevance: {
+      active: ToolWithIntelligence[];
+      available: ToolWithIntelligence[];
+      filtered: ToolWithIntelligence[];
+    };
+    summary: IntelligentSummary;
+    recommendations: Recommendation[];
+    optimizationOpportunities: OptimizationOpportunity[];
+    aiContext: AIContext;
+  }
+
   export interface ContextObject {
     markdown: string;
     conversationStarter: string | null;
@@ -168,7 +263,12 @@ declare module 'ctdiscovery' {
     verbose?: boolean;
     enableCache?: boolean;
     cacheTTL?: number;
+    intelligenceMode?: 'all' | 'smart' | 'project-optimized' | 'ai-context';
     config?: any;
+  }
+
+  export interface IntelligentAnalyzeOptions {
+    mode?: 'all' | 'smart' | 'project-optimized' | 'ai-context';
   }
 
   export interface ScanOptions extends CTDiscoveryOptions {}
@@ -209,10 +309,18 @@ declare module 'ctdiscovery' {
     analyze(scanResults: ScanResults, options?: AnalysisOptions): Promise<AnalysisResult>;
 
     /**
+     * Apply intelligent analysis to results
+     */
+    intelligentAnalyze(
+      analysisResult: AnalysisResult,
+      options?: IntelligentAnalyzeOptions
+    ): Promise<IntelligentAnalysisResult>;
+
+    /**
      * Format analysis result for output
      */
     format(
-      analysisResult: AnalysisResult,
+      analysisResult: AnalysisResult | IntelligentAnalysisResult,
       format?: 'json' | 'markdown' | 'text',
       options?: FormatOptions
     ): Promise<string>;
@@ -330,6 +438,58 @@ declare module 'ctdiscovery' {
   }
 
   // ============================================================================
+  // Intelligence Layer
+  // ============================================================================
+
+  export class ProjectTypeDetector {
+    constructor(options?: { projectRoot?: string });
+    detect(): Promise<ProjectIntelligence>;
+    getRelevantToolEcosystem(projectType: string): string[];
+  }
+
+  export class RelevanceScorer {
+    constructor(options?: any);
+    scoreTools(tools: Tool[], projectType: ProjectIntelligence): Promise<ToolWithIntelligence[]>;
+    filterByRelevance(tools: ToolWithIntelligence[], minScore?: number): ToolWithIntelligence[];
+    groupByRelevance(tools: ToolWithIntelligence[]): {
+      active: ToolWithIntelligence[];
+      available: ToolWithIntelligence[];
+      noise: ToolWithIntelligence[];
+    };
+  }
+
+  export class UsageAnalyzer {
+    constructor(options?: { projectRoot?: string });
+    analyzeUsage(tools: Tool[]): Promise<Tool[]>;
+  }
+
+  export interface IntelligenceAnalyzerOptions {
+    projectRoot?: string;
+    intelligenceMode?: 'all' | 'smart' | 'project-optimized' | 'ai-context';
+  }
+
+  export class IntelligenceAnalyzer {
+    constructor(options?: IntelligenceAnalyzerOptions);
+    analyze(tools: Tool[], analysisResult: AnalysisResult): Promise<{
+      projectIntelligence: ProjectIntelligence;
+      tools: {
+        active: ToolWithIntelligence[];
+        available: ToolWithIntelligence[];
+        noise: ToolWithIntelligence[];
+        all: ToolWithIntelligence[];
+      };
+      summary: IntelligentSummary;
+      recommendations: Recommendation[];
+      optimizationOpportunities: OptimizationOpportunity[];
+      aiContext: AIContext;
+    }>;
+    filterByMode(
+      intelligence: any,
+      mode: 'all' | 'smart' | 'project-optimized' | 'ai-context'
+    ): ToolWithIntelligence[];
+  }
+
+  // ============================================================================
   // Utilities
   // ============================================================================
 
@@ -393,4 +553,22 @@ declare module 'ctdiscovery/formatters' {
 
 declare module 'ctdiscovery/constants' {
   export { TOOL_STATUSES, TOOL_CATEGORIES } from 'ctdiscovery';
+}
+
+declare module 'ctdiscovery/intelligence' {
+  export {
+    ProjectTypeDetector,
+    RelevanceScorer,
+    UsageAnalyzer,
+    IntelligenceAnalyzer,
+    ProjectIntelligence,
+    UsagePattern,
+    ToolRelevance,
+    ToolWithIntelligence,
+    IntelligentSummary,
+    IntelligentAnalysisResult,
+    Recommendation,
+    OptimizationOpportunity,
+    AIContext
+  } from 'ctdiscovery';
 }
