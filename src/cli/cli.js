@@ -31,6 +31,9 @@ class CTDiscoveryCLI {
 
   async run(options = {}) {
     try {
+      // Auto-quiet mode for JSON/markdown output
+      const isQuietMode = options.quiet || options.json || options.markdown;
+
       // Initialize CTDiscovery with options
       const ctd = new CTDiscovery({
         timeout: options.timeout || 10000,
@@ -38,11 +41,11 @@ class CTDiscoveryCLI {
       });
 
       // Scan environment
-      if (!options.quiet) {
+      if (!isQuietMode) {
         console.log(`🔍 CTDiscovery ${this.colors.gray}v${VERSION}${this.colors.reset} - Multi-layer Environment Discovery\n`);
       }
 
-      const scanResults = await ctd.scan();
+      const scanResults = await ctd.scan({ quiet: isQuietMode });
       const analysis = await ctd.analyze(scanResults);
 
       // Apply intelligence layer if requested

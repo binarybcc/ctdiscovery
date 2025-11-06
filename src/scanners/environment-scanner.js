@@ -15,7 +15,8 @@ export class EnvironmentScanner {
     
     this.sequentialScanner = new SequentialScanner({
       totalTimeout: options.totalTimeout || 3000,
-      scannerTimeout: options.scannerTimeout || 2000
+      scannerTimeout: options.scannerTimeout || 2000,
+      quiet: options.quiet || false
     });
     
     this.errorHandler = new ErrorHandler();

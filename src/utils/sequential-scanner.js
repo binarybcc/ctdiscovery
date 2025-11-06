@@ -9,6 +9,7 @@ export class SequentialScanner {
   constructor(options = {}) {
     this.totalTimeout = options.totalTimeout || 3000; // 3 seconds total
     this.scannerTimeout = options.scannerTimeout || 2000; // 2 seconds per scanner
+    this.quiet = options.quiet || false; // Suppress progress messages
     this.errorHandler = new ErrorHandler();
     this.results = {};
     this.scanStartTime = null;
@@ -32,18 +33,22 @@ export class SequentialScanner {
       status: 'running'
     };
 
-    console.log(`🔍 Starting sequential scan of ${scanners.length} scanners...`);
+    if (!this.quiet) {
+      console.log(`🔍 Starting sequential scan of ${scanners.length} scanners...`);
+    }
 
     for (let i = 0; i < scanners.length; i++) {
       const scanner = scanners[i];
       const scannerStartTime = Date.now();
-      
+
       // Check total time budget
       const elapsedTotal = Date.now() - this.scanStartTime;
       const remainingTime = this.totalTimeout - elapsedTotal;
-      
+
       if (remainingTime <= 0) {
-        console.log(`⏰ Total timeout reached - skipping remaining ${scanners.length - i} scanners`);
+        if (!this.quiet) {
+          console.log(`⏰ Total timeout reached - skipping remaining ${scanners.length - i} scanners`);
+        }
         
         // Mark remaining scanners as skipped
         for (let j = i; j < scanners.length; j++) {
@@ -59,8 +64,10 @@ export class SequentialScanner {
       const effectiveTimeout = Math.min(this.scannerTimeout, remainingTime - 100); // 100ms buffer
       
       try {
-        console.log(`📊 Scanning ${scanner.name} (timeout: ${effectiveTimeout}ms)...`);
-        
+        if (!this.quiet) {
+          console.log(`📊 Scanning ${scanner.name} (timeout: ${effectiveTimeout}ms)...`);
+        }
+
         const scannerResult = await this.runWithTimeout(
           scanner.scan(),
           effectiveTimeout,
@@ -81,13 +88,17 @@ export class SequentialScanner {
           scanDuration: duration
         };
 
-        console.log(`✅ ${scanner.name} completed in ${duration}ms`);
+        if (!this.quiet) {
+          console.log(`✅ ${scanner.name} completed in ${duration}ms`);
+        }
 
       } catch (error) {
         const duration = Date.now() - scannerStartTime;
-        
+
         if (error.name === 'TimeoutError') {
-          console.log(`⏰ ${scanner.name} timed out after ${effectiveTimeout}ms`);
+          if (!this.quiet) {
+            console.log(`⏰ ${scanner.name} timed out after ${effectiveTimeout}ms`);
+          }
           
           results.timeouts.push({
             name: scanner.name,
@@ -105,7 +116,9 @@ export class SequentialScanner {
           this.results[scanner.category] = errorResult.data;
 
         } else {
-          console.log(`❌ ${scanner.name} failed: ${error.message}`);
+          if (!this.quiet) {
+            console.log(`❌ ${scanner.name} failed: ${error.message}`);
+          }
           
           results.failed.push({
             name: scanner.name,
@@ -137,9 +150,11 @@ export class SequentialScanner {
     // Calculate final results
     results.totalDuration = Date.now() - this.scanStartTime;
     results.status = this.determineFinalStatus(results);
-    
-    console.log(`🏁 Sequential scan completed in ${results.totalDuration}ms`);
-    console.log(`📊 Results: ${results.completed.length} completed, ${results.failed.length} failed, ${results.skipped.length} skipped`);
+
+    if (!this.quiet) {
+      console.log(`🏁 Sequential scan completed in ${results.totalDuration}ms`);
+      console.log(`📊 Results: ${results.completed.length} completed, ${results.failed.length} failed, ${results.skipped.length} skipped`);
+    }
 
     return {
       scanResults: this.results,
