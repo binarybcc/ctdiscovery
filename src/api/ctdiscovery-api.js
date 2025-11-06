@@ -62,7 +62,9 @@ export default class CTDiscovery {
     this.scanner = new EnvironmentScanner();
     this.deduplicator = new Deduplicator();
     this.overlapDetector = new OverlapDetector();
-    this.enricher = new Enricher();
+    this.enricher = new Enricher({
+      projectRoot: process.cwd()
+    });
     this.validator = new Validator();
     this.intelligenceAnalyzer = new IntelligenceAnalyzer({
       projectRoot: process.cwd(),
