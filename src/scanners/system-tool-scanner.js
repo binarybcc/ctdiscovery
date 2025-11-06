@@ -14,9 +14,12 @@ export class SystemToolScanner extends ToolScannerInterface {
     this.platformDetection = new PlatformDetection();
     this.toolCategories = {
       'version-control': ['git', 'gh', 'hub'],
-      'language': ['node', 'npm', 'python', 'python3', 'pip', 'ruby', 'go', 'rust', 'java'],
+      'language': ['node', 'npm', 'python', 'python3', 'pip', 'php', 'ruby', 'go', 'rust', 'java'],
       'build-tool': ['make', 'cmake', 'docker', 'podman', 'webpack', 'vite', 'rollup'],
-      'package-manager': ['brew', 'npm', 'yarn', 'pnpm', 'pip', 'cargo', 'gem'],
+      'package-manager': ['brew', 'npm', 'yarn', 'pnpm', 'pip', 'composer', 'cargo', 'gem'],
+      'php-tools': ['phpstan', 'psalm', 'phpcs', 'php-cs-fixer', 'rector', 'phpunit'],
+      'javascript-tools': ['eslint', 'prettier', 'typescript', 'tsc'],
+      'python-tools': ['pytest', 'black', 'mypy', 'pylint', 'flake8'],
       'ai-assistant': ['claude', 'copilot', 'cursor'],
       'development': ['code', 'vim', 'nvim', 'emacs', 'curl', 'wget', 'jq']
     };
@@ -51,6 +54,9 @@ export class SystemToolScanner extends ToolScannerInterface {
       'Detect system development tools',
       'Check tool versions and availability',
       'Identify package managers and languages',
+      'Detect PHP ecosystem tools (Composer, PHPStan, Psalm, etc.)',
+      'Detect JavaScript tools (ESLint, Prettier, TypeScript)',
+      'Detect Python tools (pytest, black, mypy)',
       'Detect AI development assistants',
       'Find build tools and automation'
     ];

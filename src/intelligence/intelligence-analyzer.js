@@ -226,8 +226,9 @@ export class IntelligenceAnalyzer {
   _generateRecommendations(grouped, projectType, opportunities) {
     const recommendations = [];
 
-    // Recommend missing essential tools
-    const essential = this._getMissingEssentialTools(grouped.active, projectType);
+    // Recommend missing essential tools (check ALL tools, not just active)
+    const allTools = [...grouped.active, ...grouped.available, ...grouped.noise];
+    const essential = this._getMissingEssentialTools(allTools, projectType);
     if (essential.length > 0) {
       recommendations.push({
         type: 'install',
@@ -270,9 +271,10 @@ export class IntelligenceAnalyzer {
 
   /**
    * Get missing essential tools for project type
+   * Checks against ALL detected tools (active, available, and filtered)
    */
-  _getMissingEssentialTools(activeTools, projectType) {
-    const activeNames = activeTools.map(t => t.name.toLowerCase());
+  _getMissingEssentialTools(allTools, projectType) {
+    const installedNames = allTools.map(t => t.name.toLowerCase());
     const missing = [];
 
     // Essential tools by project type
@@ -288,7 +290,7 @@ export class IntelligenceAnalyzer {
     for (const lang of projectType.languages) {
       const essential = essentials[lang] || [];
       for (const tool of essential) {
-        if (!activeNames.includes(tool)) {
+        if (!installedNames.includes(tool)) {
           missing.push(tool);
         }
       }
