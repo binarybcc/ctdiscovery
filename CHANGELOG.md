@@ -5,6 +5,144 @@ All notable changes to CTDiscovery will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-11-06
+
+### ✨ Major Feature: Intelligent Analysis Layer
+
+Transforms CTDiscovery from an exhaustive tool inventory into a curated, context-aware analysis system.
+
+#### Added
+
+**Intelligence Layer Components**
+- **Project Type Detector** (`src/intelligence/project-type-detector.js`)
+  - Auto-detects project type from configuration files
+  - Supports: JavaScript, TypeScript, PHP, Python, Rust, Go, Java, Ruby, Docker
+  - Identifies frameworks, package managers, and build systems
+  - Calculates confidence scores (0-100%)
+  - Maps project types to relevant tool ecosystems
+
+- **Relevance Scorer** (`src/intelligence/relevance-scorer.js`)
+  - Multi-factor scoring system (0-100 points)
+  - Ecosystem match: 0-40 points
+  - Configuration status: 0-20 points
+  - Active usage: 0-20 points
+  - Capability match: 0-10 points
+  - Industry standard: 0-10 points
+  - Categorizes tools: critical, high, medium, low, irrelevant
+  - Groups tools: active, available, noise
+
+- **Usage Analyzer** (`src/intelligence/usage-analyzer.js`)
+  - Analyzes actual usage patterns vs "just installed"
+  - Checks config files, lock files, package scripts, tool directories
+  - Determines patterns: active-development, configured, installed, dormant
+  - Assesses configuration maturity: mature, configured, basic, installed-only
+
+- **Intelligence Analyzer** (`src/intelligence/intelligence-analyzer.js`)
+  - Main orchestrator combining all intelligence components
+  - Generates smart summaries and maturity assessments (0-100 scale)
+  - Provides actionable recommendations
+  - Builds AI-optimized context for assistants
+  - Supports 4 filtering modes: all, smart, project-optimized, ai-context
+
+**Enhanced CLI** (`src/cli/cli.js`)
+- New intelligence mode flags:
+  - `--smart`: Intelligent filtering (relevant tools only)
+  - `--all`: Complete inventory (all tools)
+  - `--project-optimized`: Project-specific relevance only
+  - `--ai-context`: Optimized for AI assistant consumption
+- Beautiful colored output with project intelligence
+- Maturity scoring and recommendations display
+- Active vs available tool categorization
+
+**Enhanced API**
+- New `intelligentAnalyze()` method in CTDiscovery API
+- `intelligenceMode` option in constructor
+- Returns comprehensive intelligence object with:
+  - Project intelligence (type, languages, frameworks, confidence)
+  - Tools by relevance (active, available, filtered)
+  - Smart summary with maturity score
+  - Actionable recommendations
+  - Optimization opportunities
+  - AI-optimized context
+
+**Enhanced JSON Formatter**
+- Auto-detects intelligent analysis results
+- Includes intelligence metadata in JSON output
+- Project type detection with confidence scores
+- Tools organized by relevance categories
+- Maturity assessment and recommendations
+- AI context with conversation starters
+
+**TypeScript Definitions**
+- Complete type definitions for intelligence layer
+- `ProjectIntelligence`, `UsagePattern`, `ToolRelevance` interfaces
+- `IntelligentAnalysisResult` extending `AnalysisResult`
+- `Recommendation`, `OptimizationOpportunity`, `AIContext` types
+- Intelligence analyzer class definitions
+
+**Examples**
+- `examples/intelligent-analysis.js`: Demonstrates all intelligence features
+- Shows project detection, smart filtering, AI context, recommendations
+- Compares different intelligence modes
+
+**Tests**
+- Comprehensive test suite: `src/test/intelligence.test.js`
+- 19 tests covering all intelligence components
+- ProjectTypeDetector, RelevanceScorer, UsageAnalyzer tests
+- IntelligenceAnalyzer integration tests
+- End-to-end intelligence pipeline testing
+- **All 19 tests passing ✓**
+
+**Documentation**
+- Comprehensive Intelligence Layer section in README
+- How it works (4-stage pipeline diagram)
+- All 4 intelligence modes explained with use cases
+- API usage examples
+- Supported project types (8+ languages)
+- Maturity assessment system (0-100 scale)
+- JSON output structure documentation
+- Real-world examples (React, Laravel, Django)
+
+#### Fixed
+
+**Critical Bug #1: Missing PHP Ecosystem Tools**
+- System tool scanner had hardcoded list that completely omitted PHP tools
+- **Added detection for**:
+  - PHP tools: phpstan, psalm, phpcs, php-cs-fixer, rector, phpunit
+  - JavaScript tools: eslint, prettier, typescript, tsc
+  - Python tools: pytest, black, mypy, pylint, flake8
+  - composer added to package-manager category
+  - php added to language category
+- Impact: PHP projects now get full ecosystem detection
+
+**Critical Bug #2: False "Install" Recommendations**
+- Intelligence layer incorrectly recommended installing already-installed tools
+- **Root cause**: Only checked 'active' tools, missed 'available' and 'filtered' tools
+- **Fixed**: Now checks ALL detected tools before recommending installation
+- Impact: No more false recommendations like "Consider installing: composer" when composer is already installed
+
+**Reported by**: @johncorbin testing on real PHP+JS hybrid project
+
+#### Changed
+
+**Enhanced Tool Detection**
+- System scanner now detects 3x more tool categories
+- Better support for hybrid projects (PHP+JS, Python+JS, etc.)
+- Language-specific tool ecosystems properly recognized
+
+**Improved Recommendations**
+- Recommendations only for truly missing tools
+- Better context-aware suggestions
+- Separate recommendations by language for hybrid projects
+
+#### Performance
+
+- Intelligence layer adds minimal overhead (~50-200ms)
+- All original scan performance maintained
+- Smart filtering reduces output noise significantly
+
+---
+
 ## [2.0.0] - 2025-11-05
 
 ### Major Release: Multi-Layer Architecture Transformation
