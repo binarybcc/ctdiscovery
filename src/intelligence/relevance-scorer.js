@@ -148,16 +148,27 @@ export class RelevanceScorer {
       return { score: 25, reasons };
     }
 
-    // Language-specific but not in project
+    // Language-specific tools
     const languageTools = {
-      'php': ['composer', 'phpstan', 'rector', 'phpunit'],
-      'python': ['pip', 'poetry', 'pytest', 'black'],
+      'php': ['composer', 'phpstan', 'rector', 'phpunit', 'psalm', 'phpcs', 'php-cs-fixer'],
+      'python': ['pip', 'poetry', 'pytest', 'black', 'mypy', 'pylint', 'flake8'],
       'ruby': ['bundler', 'rake', 'rspec'],
       'rust': ['cargo', 'rustc', 'clippy'],
       'go': ['gofmt', 'golint'],
-      'java': ['maven', 'gradle', 'javac']
+      'java': ['maven', 'gradle', 'javac'],
+      'javascript': ['npm', 'yarn', 'pnpm', 'eslint', 'prettier'],
+      'typescript': ['tsc', 'eslint', 'prettier']
     };
 
+    // Check if tool is essential for THIS project's language
+    for (const [lang, tools] of Object.entries(languageTools)) {
+      if (tools.includes(toolName) && projectType.languages.includes(lang)) {
+        reasons.push(`Essential ${lang} development tool`);
+        return { score: 35, reasons };
+      }
+    }
+
+    // Check if tool is language-specific but NOT for this project (irrelevant)
     for (const [lang, tools] of Object.entries(languageTools)) {
       if (tools.includes(toolName) && !projectType.languages.includes(lang)) {
         reasons.push(`Irrelevant to ${projectType.primaryType} project`);

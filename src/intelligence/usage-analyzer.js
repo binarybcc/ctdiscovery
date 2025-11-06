@@ -85,11 +85,12 @@ export class UsageAnalyzer {
     }
 
     // Check npm scripts / composer scripts
+    // Being in scripts = actively used in development workflow!
     const scriptCheck = this._checkScripts(tool);
     if (scriptCheck.found) {
       indicators.push(...scriptCheck.indicators);
       frequency = scriptCheck.frequency;
-      confidence += 25;
+      confidence += 45;  // Increased from 25 to 45 - scripts mean active use!
     }
 
     // Check for tool-specific directories
