@@ -22,13 +22,16 @@ export class EnvironmentScanner {
     this.errorHandler = new ErrorHandler();
   }
 
-  async scan() {
+  async scan(options = {}) {
     const startTime = Date.now();
-    
+
+    // Update quiet mode at runtime
+    this.sequentialScanner.quiet = options.quiet || false;
+
     // Prepare scanner list
     const scanners = [
       this.mcpScanner,
-      this.vscodeScanner, 
+      this.vscodeScanner,
       this.systemScanner
     ];
     
